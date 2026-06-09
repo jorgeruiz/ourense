@@ -43,7 +43,7 @@ export function PortfolioPreview() {
         {/* Cabecera */}
         <div className="portfolio-heading flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
           <h2
-            className="text-white font-montserrat font-700 leading-none tracking-[-0.02em]"
+            className="text-white font-sans font-bold leading-none tracking-[-0.02em]"
             style={{ fontSize: "clamp(2rem, 5vw, 4.5rem)" }}
           >
             Proyectos
@@ -52,7 +52,7 @@ export function PortfolioPreview() {
           </h2>
           <Link
             href="/portafolio"
-            className="self-start lg:self-auto inline-flex items-center gap-3 border border-white/25 text-white text-sm font-500 uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:border-[#A80110] hover:text-[#A80110] active:scale-[0.98]"
+            className="self-start lg:self-auto inline-flex items-center gap-3 border border-white/25 text-white text-sm font-medium uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:border-[#A80110] hover:text-[#A80110] active:scale-[0.98]"
           >
             Ver portafolio completo
           </Link>
@@ -69,10 +69,10 @@ export function PortfolioPreview() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
           <div className="absolute bottom-6 left-6">
-            <p className="text-[#A80110] text-xs uppercase tracking-[0.14em] font-500 mb-1">
+            <p className="text-[#A80110] text-xs uppercase tracking-[0.14em] font-medium mb-1">
               Infraestructura
             </p>
-            <p className="text-white font-montserrat font-700 text-2xl">Proyecto de gran escala</p>
+            <p className="text-white font-sans font-bold text-2xl">Proyecto de gran escala</p>
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export function PortfolioPreview() {
               { label: "B2B + directo", sub: "Tipo de cliente" },
             ].map((item) => (
               <div key={item.label} className="min-w-[120px]">
-                <p className="text-white font-montserrat font-700 text-xl">{item.label}</p>
+                <p className="text-white font-sans font-bold text-xl">{item.label}</p>
                 <p className="text-[#555555] text-xs uppercase tracking-[0.1em] mt-1">{item.sub}</p>
               </div>
             ))}

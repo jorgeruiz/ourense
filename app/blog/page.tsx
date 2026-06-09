@@ -25,7 +25,7 @@ export default function BlogPage() {
     <div className="bg-[#0A0A0A]">
       <section className="pt-32 pb-16 max-w-[1400px] mx-auto px-6 xl:px-20">
         <h1
-          className="text-white font-montserrat font-700 leading-none tracking-[-0.03em] mb-6"
+          className="text-white font-sans font-bold leading-none tracking-[-0.03em] mb-6"
           style={{ fontSize: "clamp(2.5rem, 6vw, 6rem)" }}
         >
           Blog
@@ -43,10 +43,10 @@ export default function BlogPage() {
               className="group flex items-center justify-between gap-8 py-8 border-b border-white/8 cursor-default"
             >
               <div>
-                <p className="text-[#A80110] text-xs uppercase tracking-[0.12em] font-500 mb-2">
+                <p className="text-[#A80110] text-xs uppercase tracking-[0.12em] font-medium mb-2">
                   {p.category}
                 </p>
-                <p className="text-white font-montserrat font-700 text-lg">{p.title}</p>
+                <p className="text-white font-sans font-bold text-lg">{p.title}</p>
               </div>
               <span className="text-[#3A3A3A] text-sm uppercase tracking-[0.12em] shrink-0">
                 Próximamente

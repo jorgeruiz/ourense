@@ -20,7 +20,7 @@ export default function ContactoPage() {
         {/* Info */}
         <div>
           <h1
-            className="text-white font-montserrat font-700 leading-none tracking-[-0.03em] mb-8"
+            className="text-white font-sans font-bold leading-none tracking-[-0.03em] mb-8"
             style={{ fontSize: "clamp(2.5rem, 5vw, 5rem)" }}
           >
             Solicita tu
@@ -38,7 +38,7 @@ export default function ContactoPage() {
               <p className="text-[#555555] text-xs uppercase tracking-[0.12em] mb-1">Teléfono</p>
               <a
                 href="tel:+525593542263"
-                className="text-white text-lg font-500 hover:text-[#A80110] transition-colors duration-200"
+                className="text-white text-lg font-medium hover:text-[#A80110] transition-colors duration-200"
               >
                 +52 (55) 9354 2263
               </a>

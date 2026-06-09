@@ -69,7 +69,7 @@ export default function ServiciosPage() {
       {/* Hero */}
       <section className="pt-32 pb-16 max-w-[1400px] mx-auto px-6 xl:px-20">
         <h1
-          className="text-white font-montserrat font-700 leading-none tracking-[-0.03em] mb-8"
+          className="text-white font-sans font-bold leading-none tracking-[-0.03em] mb-8"
           style={{ fontSize: "clamp(2.5rem, 6vw, 6rem)" }}
         >
           Servicios de construcción
@@ -109,11 +109,11 @@ export default function ServiciosPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               </div>
               <div className="p-6">
-                <h2 className="text-white font-montserrat font-700 text-xl mb-3 group-hover:text-[#A80110] transition-colors duration-200">
+                <h2 className="text-white font-sans font-bold text-xl mb-3 group-hover:text-[#A80110] transition-colors duration-200">
                   {s.title}
                 </h2>
                 <p className="text-[#999999] text-sm leading-relaxed">{s.description}</p>
-                <span className="inline-block mt-4 text-[#A80110] text-xs uppercase tracking-[0.12em] font-500">
+                <span className="inline-block mt-4 text-[#A80110] text-xs uppercase tracking-[0.12em] font-medium">
                   Ver servicio →
                 </span>
               </div>
@@ -125,7 +125,7 @@ export default function ServiciosPage() {
       {/* CTA */}
       <section className="max-w-[1400px] mx-auto px-6 xl:px-20 py-16 border-t border-white/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
         <div>
-          <p className="text-white font-montserrat font-700 text-2xl mb-2">
+          <p className="text-white font-sans font-bold text-2xl mb-2">
             ¿Necesitas más de un servicio?
           </p>
           <p className="text-[#999999] text-sm">
@@ -134,7 +134,7 @@ export default function ServiciosPage() {
         </div>
         <Link
           href="/contacto"
-          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-500 uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
+          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-medium uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
         >
           Solicitar cotización
         </Link>

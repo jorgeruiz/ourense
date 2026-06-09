@@ -69,7 +69,7 @@ function FAQItem({
         onClick={onToggle}
         className="w-full flex items-center justify-between gap-6 py-6 text-left group"
       >
-        <span className="text-white font-montserrat font-500 text-base leading-snug group-hover:text-[#FAFAFA] transition-colors duration-200">
+        <span className="text-white font-sans font-medium text-base leading-snug group-hover:text-[#FAFAFA] transition-colors duration-200">
           {faq.q}
         </span>
         <span
@@ -136,7 +136,7 @@ export function FAQ() {
           {/* Cabecera sticky */}
           <div className="faq-heading lg:col-span-2 lg:sticky lg:top-28 self-start">
             <h2
-              className="text-white font-montserrat font-700 leading-none tracking-[-0.02em] mb-6"
+              className="text-white font-sans font-bold leading-none tracking-[-0.02em] mb-6"
               style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}
             >
               Preguntas
@@ -149,7 +149,7 @@ export function FAQ() {
             </p>
             <a
               href="/preguntas-frecuentes"
-              className="text-[#A80110] text-sm uppercase tracking-[0.12em] font-500 hover:text-white transition-colors duration-200"
+              className="text-[#A80110] text-sm uppercase tracking-[0.12em] font-medium hover:text-white transition-colors duration-200"
             >
               Ver todas las FAQs →
             </a>

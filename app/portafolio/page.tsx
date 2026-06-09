@@ -54,7 +54,7 @@ export default function PortafolioPage() {
         </div>
         <div className="relative max-w-[1400px] mx-auto px-6 xl:px-20">
           <h1
-            className="text-white font-montserrat font-700 leading-none tracking-[-0.03em] mb-6"
+            className="text-white font-sans font-bold leading-none tracking-[-0.03em] mb-6"
             style={{ fontSize: "clamp(2.5rem, 6vw, 6rem)" }}
           >
             Portafolio
@@ -81,10 +81,10 @@ export default function PortafolioPage() {
                 </span>
               </div>
               <div className="p-6">
-                <p className="text-[#A80110] text-xs uppercase tracking-[0.14em] font-500 mb-2">
+                <p className="text-[#A80110] text-xs uppercase tracking-[0.14em] font-medium mb-2">
                   {p.service}
                 </p>
-                <h2 className="text-white font-montserrat font-700 text-lg mb-2">{p.title}</h2>
+                <h2 className="text-white font-sans font-bold text-lg mb-2">{p.title}</h2>
                 <p className="text-[#555555] text-xs uppercase tracking-[0.1em] mb-3">{p.location}</p>
                 <p className="text-[#999999] text-sm leading-relaxed">{p.description}</p>
               </div>
@@ -100,12 +100,12 @@ export default function PortafolioPage() {
 
       {/* CTA */}
       <section className="max-w-[1400px] mx-auto px-6 xl:px-20 py-16 border-t border-white/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
-        <p className="text-white font-montserrat font-700 text-2xl max-w-[400px]">
+        <p className="text-white font-sans font-bold text-2xl max-w-[400px]">
           ¿Quieres ver proyectos de tu industria?
         </p>
         <Link
           href="/contacto"
-          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-500 uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
+          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-medium uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
         >
           Solicitar información
         </Link>

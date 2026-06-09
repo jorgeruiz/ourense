@@ -18,7 +18,7 @@ export default function NosotrosPage() {
       {/* Hero */}
       <section className="pt-32 pb-16 max-w-[1400px] mx-auto px-6 xl:px-20">
         <h1
-          className="text-white font-montserrat font-700 leading-none tracking-[-0.03em] mb-8"
+          className="text-white font-sans font-bold leading-none tracking-[-0.03em] mb-8"
           style={{ fontSize: "clamp(2.5rem, 6vw, 6rem)" }}
         >
           Sobre Ourense
@@ -46,7 +46,7 @@ export default function NosotrosPage() {
       {/* Historia y misión */}
       <section className="max-w-[1400px] mx-auto px-6 xl:px-20 py-16 grid grid-cols-1 lg:grid-cols-2 gap-16 border-t border-white/8">
         <div>
-          <h2 className="text-white font-montserrat font-700 text-3xl mb-6">Quiénes somos</h2>
+          <h2 className="text-white font-sans font-bold text-3xl mb-6">Quiénes somos</h2>
           <p className="text-[#999999] text-base leading-relaxed mb-4">
             Ourense es una empresa constructora con más de 10 años de operación en el mercado
             mexicano. Desde nuestra sede en Av. Insurgentes Sur 1748-501, Col. Florida, Álvaro
@@ -66,7 +66,7 @@ export default function NosotrosPage() {
 
         {/* Datos verificables */}
         <div>
-          <h2 className="text-white font-montserrat font-700 text-3xl mb-6">
+          <h2 className="text-white font-sans font-bold text-3xl mb-6">
             Datos verificables
           </h2>
           <dl className="divide-y divide-white/8">
@@ -90,7 +90,7 @@ export default function NosotrosPage() {
 
       {/* Servicios */}
       <section className="max-w-[1400px] mx-auto px-6 xl:px-20 py-16 border-t border-white/8">
-        <h2 className="text-white font-montserrat font-700 text-3xl mb-10">Nuestros servicios</h2>
+        <h2 className="text-white font-sans font-bold text-3xl mb-10">Nuestros servicios</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
             { title: "Construcción integral", desc: "Edificación desde la cimentación hasta los acabados.", href: "/servicios/construccion" },
@@ -105,7 +105,7 @@ export default function NosotrosPage() {
               href={s.href}
               className="group border border-white/8 p-6 transition-colors duration-300 hover:border-[#A80110]/40"
             >
-              <h3 className="text-white font-700 text-base mb-2 group-hover:text-[#A80110] transition-colors duration-200">
+              <h3 className="text-white font-bold text-base mb-2 group-hover:text-[#A80110] transition-colors duration-200">
                 {s.title}
               </h3>
               <p className="text-[#999999] text-sm">{s.desc}</p>
@@ -116,12 +116,12 @@ export default function NosotrosPage() {
 
       {/* CTA */}
       <section className="max-w-[1400px] mx-auto px-6 xl:px-20 py-16 border-t border-white/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
-        <p className="text-white font-montserrat font-700 text-2xl max-w-[400px] leading-snug">
+        <p className="text-white font-sans font-bold text-2xl max-w-[400px] leading-snug">
           ¿Listo para comenzar tu proyecto?
         </p>
         <Link
           href="/contacto"
-          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-500 uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
+          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-medium uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
         >
           Solicitar cotización
         </Link>

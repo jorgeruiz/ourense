@@ -15,14 +15,14 @@ import {
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
-  variable: "--font-montserrat",
+  variable: "--font-sans-base",
   display: "swap",
 });
 
 const monoton = Monoton({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-monoton",
+  variable: "--font-display-base",
   display: "swap",
 });
 
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${montserrat.variable} ${monoton.variable}`}>
+    <html lang="es" className={`${montserrat.variable} ${monoton.variable}`} suppressHydrationWarning>
       <head>
         <JsonLd data={professionalServiceSchema} />
         <JsonLd data={webSiteSchema} />

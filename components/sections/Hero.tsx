@@ -109,7 +109,7 @@ export function Hero() {
       {/* Contenido */}
       <div ref={textRef} className="relative z-10 text-center max-w-[1400px] mx-auto px-6 xl:px-20">
         <h1
-          className="text-white font-montserrat font-700 leading-none tracking-[-0.03em] mb-6"
+          className="text-white font-sans font-bold leading-none tracking-[-0.03em] mb-6"
           style={{ fontSize: "clamp(3rem, 8vw, 8rem)" }}
         >
           Constructora en
@@ -125,7 +125,7 @@ export function Hero() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/contacto"
-            className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-500 uppercase tracking-[0.12em] px-8 py-4 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[#8a010d] active:scale-[0.98]"
+            className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-medium uppercase tracking-[0.12em] px-8 py-4 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[#8a010d] active:scale-[0.98]"
           >
             Solicitar cotización
             <span className="w-5 h-5 flex items-center justify-center bg-white/10 text-xs">
@@ -134,7 +134,7 @@ export function Hero() {
           </Link>
           <Link
             href="/portafolio"
-            className="inline-flex items-center gap-3 border border-white/25 text-white text-sm font-500 uppercase tracking-[0.12em] px-8 py-4 transition-all duration-300 hover:border-[#A80110] hover:text-[#A80110] active:scale-[0.98]"
+            className="inline-flex items-center gap-3 border border-white/25 text-white text-sm font-medium uppercase tracking-[0.12em] px-8 py-4 transition-all duration-300 hover:border-[#A80110] hover:text-[#A80110] active:scale-[0.98]"
           >
             Ver portafolio
           </Link>
@@ -149,7 +149,7 @@ export function Hero() {
           { value: "Nacional", label: "Cobertura" },
         ].map((stat) => (
           <div key={stat.label} className="text-center lg:text-left">
-            <p className="text-white font-700 text-lg leading-none">{stat.value}</p>
+            <p className="text-white font-bold text-lg leading-none">{stat.value}</p>
             <p className="text-[#999999] text-xs uppercase tracking-[0.1em] mt-1">{stat.label}</p>
           </div>
         ))}

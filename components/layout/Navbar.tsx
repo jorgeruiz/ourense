@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -17,9 +17,13 @@ const NAV_LINKS = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Propuesta-2 tiene su propia nav light — no renderizar la dark global
+  if (pathname?.startsWith("/propuesta-2")) return null;
 
   useEffect(() => {
     const trigger = ScrollTrigger.create({
@@ -52,14 +56,14 @@ export function Navbar() {
         <div className="max-w-[1400px] mx-auto px-6 xl:px-20 h-full flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group" aria-label="Ourense — Inicio">
-            <Image
-              src="/images/logo.png"
-              alt="Ourense logo"
-              width={36}
-              height={36}
-              className="rounded-full transition-transform duration-300 group-hover:rotate-12"
-            />
-            <span className="text-white font-montserrat font-700 text-sm uppercase tracking-[0.16em]">
+            {/* "O" tipográfica Monoton — sin fondo, sin imagen */}
+            <span
+              className="font-display text-[#A80110] text-2xl leading-none select-none transition-opacity duration-300 group-hover:opacity-70"
+              aria-hidden="true"
+            >
+              O
+            </span>
+            <span className="text-white font-sans font-bold text-sm uppercase tracking-[0.16em]">
               Ourense
             </span>
           </Link>
@@ -70,7 +74,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[#999999] hover:text-white text-sm font-500 uppercase tracking-[0.1em] transition-colors duration-200"
+                className="text-[#999999] hover:text-white text-sm font-medium uppercase tracking-[0.1em] transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -81,7 +85,7 @@ export function Navbar() {
           <div className="flex items-center gap-4">
             <Link
               href="/contacto"
-              className="hidden lg:inline-flex items-center gap-2 bg-[#A80110] text-white text-xs font-500 uppercase tracking-[0.12em] px-6 py-3 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
+              className="hidden lg:inline-flex items-center gap-2 bg-[#A80110] text-white text-xs font-medium uppercase tracking-[0.12em] px-6 py-3 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
             >
               Solicitar cotización
             </Link>
@@ -129,7 +133,7 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="text-white text-3xl font-700 uppercase tracking-[0.08em] transition-all duration-300 hover:text-[#A80110]"
+              className="text-white text-3xl font-bold uppercase tracking-[0.08em] transition-all duration-300 hover:text-[#A80110]"
               style={{
                 transitionDelay: menuOpen ? `${i * 60}ms` : "0ms",
                 transform: menuOpen ? "translateY(0)" : "translateY(24px)",
@@ -142,7 +146,7 @@ export function Navbar() {
           <Link
             href="/contacto"
             onClick={() => setMenuOpen(false)}
-            className="mt-8 bg-[#A80110] text-white text-sm font-500 uppercase tracking-[0.12em] px-10 py-4 transition-all duration-300 hover:bg-[#8a010d]"
+            className="mt-8 bg-[#A80110] text-white text-sm font-medium uppercase tracking-[0.12em] px-10 py-4 transition-all duration-300 hover:bg-[#8a010d]"
             style={{
               transitionDelay: menuOpen ? `${NAV_LINKS.length * 60}ms` : "0ms",
               transform: menuOpen ? "translateY(0)" : "translateY(24px)",

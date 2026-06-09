@@ -113,7 +113,7 @@ export function Services() {
         {/* Cabecera */}
         <div className="services-heading mb-16 lg:mb-20">
           <h2
-            className="text-white font-montserrat font-700 leading-none tracking-[-0.02em] mb-6"
+            className="text-white font-sans font-bold leading-none tracking-[-0.02em] mb-6"
             style={{ fontSize: "clamp(2rem, 5vw, 4.5rem)" }}
           >
             Servicios de construcción
@@ -149,9 +149,9 @@ export function Services() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
               </div>
               <div className="p-6">
-                <h3 className="text-white font-montserrat font-700 text-xl mb-3">{s.title}</h3>
+                <h3 className="text-white font-sans font-bold text-xl mb-3">{s.title}</h3>
                 <p className="text-[#999999] text-sm leading-relaxed">{s.description}</p>
-                <span className="inline-block mt-4 text-[#A80110] text-xs uppercase tracking-[0.12em] font-500">
+                <span className="inline-block mt-4 text-[#A80110] text-xs uppercase tracking-[0.12em] font-medium">
                   Ver más →
                 </span>
               </div>
@@ -167,11 +167,11 @@ export function Services() {
               href={s.href}
               className="group bg-[#0A0A0A] p-8 transition-colors duration-300 hover:bg-[#111111]"
             >
-              <h3 className="text-white font-montserrat font-700 text-base mb-3 group-hover:text-[#A80110] transition-colors duration-200">
+              <h3 className="text-white font-sans font-bold text-base mb-3 group-hover:text-[#A80110] transition-colors duration-200">
                 {s.title}
               </h3>
               <p className="text-[#999999] text-sm leading-relaxed">{s.description}</p>
-              <span className="block mt-4 text-[#A80110] text-xs uppercase tracking-[0.12em] font-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <span className="block mt-4 text-[#A80110] text-xs uppercase tracking-[0.12em] font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 Ver servicio →
               </span>
             </Link>

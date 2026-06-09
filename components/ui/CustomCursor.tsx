@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
 
 export function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -14,18 +13,18 @@ export function CustomCursor() {
 
     document.body.classList.add("has-custom-cursor");
 
-    const xTo = gsap.quickTo(cursorRef.current, "x", { duration: 0.4, ease: "power3" });
-    const yTo = gsap.quickTo(cursorRef.current, "y", { duration: 0.4, ease: "power3" });
+    const cursor = cursorRef.current;
+    // Offset by half the cursor size (5px) to center the dot on the pointer
+    const HALF = 5;
 
     const onMouseMove = (e: MouseEvent) => {
-      xTo(e.clientX);
-      yTo(e.clientY);
+      cursor.style.transform = `translate(${e.clientX - HALF}px, ${e.clientY - HALF}px)`;
     };
 
-    const onMouseEnterLink = () => cursorRef.current?.classList.add("custom-cursor--large");
-    const onMouseLeaveLink = () => cursorRef.current?.classList.remove("custom-cursor--large");
+    const onMouseEnterLink = () => cursor.classList.add("custom-cursor--large");
+    const onMouseLeaveLink = () => cursor.classList.remove("custom-cursor--large");
 
-    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
     document.querySelectorAll("a, button").forEach((el) => {
       el.addEventListener("mouseenter", onMouseEnterLink);
       el.addEventListener("mouseleave", onMouseLeaveLink);

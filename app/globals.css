@@ -1,26 +1,27 @@
 @import "tailwindcss";
 
-/* ─── Tokens Ourense ─────────────────────────────────────── */
+/* ─── Tailwind v4: tokens registrados como utilities ─── */
+@theme {
+  /* Fuentes — next/font inyecta --font-sans-base y --font-display-base en <html> */
+  --font-sans:     var(--font-sans-base);
+  --font-display:  var(--font-display-base);
+
+  /* Colores de marca */
+  --color-brand:      #A80110;
+  --color-brand-dark: #8a010d;
+  --color-surface:    #0A0A0A;
+  --color-raised:     #111111;
+  --color-overlay:    #1A1A1A;
+  --color-muted:      #999999;
+  --color-subtle:     #3A3A3A;
+}
+
+/* ─── Variables de easing (solo CSS, no Tailwind utilities) ─── */
 :root {
-  --color-brand:       #A80110;
-  --color-black:       #0A0A0A;
-  --color-white:       #FAFAFA;
-  --color-gray-100:    #F2F2F2;
-  --color-gray-400:    #999999;
-  --color-gray-700:    #3A3A3A;
-
-  --surface-base:      #0A0A0A;
-  --surface-raised:    #111111;
-  --surface-overlay:   #1A1A1A;
-  --text-primary:      #FAFAFA;
-  --text-secondary:    #999999;
-  --text-muted:        #555555;
-  --accent:            #A80110;
-  --border-subtle:     rgba(255, 255, 255, 0.08);
-  --border-strong:     rgba(255, 255, 255, 0.16);
-
-  --ease-out-expo:     cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out-expo:  cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out-expo:    cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-expo: cubic-bezier(0.77, 0, 0.175, 1);
+  --border-subtle:    rgba(255, 255, 255, 0.08);
+  --border-strong:    rgba(255, 255, 255, 0.16);
 }
 
 /* ─── Reset base ─────────────────────────────────────────── */
@@ -32,9 +33,9 @@ html {
 }
 
 body {
-  background-color: var(--color-black);
-  color: var(--color-white);
-  font-family: var(--font-montserrat), system-ui, sans-serif;
+  background-color: #0A0A0A;
+  color: #FAFAFA;
+  font-family: var(--font-sans-base), system-ui, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -42,26 +43,26 @@ body {
 }
 
 ::selection {
-  background-color: var(--color-brand);
-  color: var(--color-white);
+  background-color: #A80110;
+  color: #FAFAFA;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-brand);
+  outline: 2px solid #A80110;
   outline-offset: 3px;
 }
 
 ::-webkit-scrollbar        { width: 6px; }
-::-webkit-scrollbar-track  { background: var(--color-black); }
-::-webkit-scrollbar-thumb  { background: var(--color-gray-700); border-radius: 3px; }
+::-webkit-scrollbar-track  { background: #0A0A0A; }
+::-webkit-scrollbar-thumb  { background: #3A3A3A; border-radius: 3px; }
 
 /* ─── Skip link ──────────────────────────────────────────── */
 .skip-link {
   position: absolute;
   left: -9999px;
   top: 1rem;
-  background: var(--color-brand);
-  color: var(--color-white);
+  background: #A80110;
+  color: #FAFAFA;
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -85,13 +86,14 @@ body {
 /* ─── Cursor custom ──────────────────────────────────────── */
 .custom-cursor {
   position: fixed;
+  top: 0;
+  left: 0;
   width: 10px;
   height: 10px;
-  background-color: var(--color-brand);
+  background-color: #A80110;
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
-  transform: translate(-50%, -50%);
   transition: width 0.2s var(--ease-out-expo), height 0.2s var(--ease-out-expo);
   will-change: transform;
 }

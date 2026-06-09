@@ -20,7 +20,7 @@ export default function FAQsPage() {
     <div className="bg-[#0A0A0A]">
       <section className="pt-32 pb-0 max-w-[1400px] mx-auto px-6 xl:px-20">
         <h1
-          className="text-white font-montserrat font-700 leading-none tracking-[-0.03em] mb-6"
+          className="text-white font-sans font-bold leading-none tracking-[-0.03em] mb-6"
           style={{ fontSize: "clamp(2.5rem, 6vw, 6rem)" }}
         >
           Preguntas frecuentes
@@ -32,12 +32,12 @@ export default function FAQsPage() {
       </section>
       <FAQ />
       <section className="max-w-[1400px] mx-auto px-6 xl:px-20 py-16 border-t border-white/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
-        <p className="text-white font-montserrat font-700 text-2xl max-w-[400px]">
+        <p className="text-white font-sans font-bold text-2xl max-w-[400px]">
           ¿No encontraste tu respuesta?
         </p>
         <Link
           href="/contacto"
-          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-500 uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
+          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-medium uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
         >
           Escríbenos
         </Link>

@@ -51,7 +51,7 @@ export default function TestimoniosPage() {
         </div>
         <div className="relative max-w-[1400px] mx-auto px-6 xl:px-20">
           <h1
-            className="text-white font-montserrat font-700 leading-none tracking-[-0.03em] mb-6"
+            className="text-white font-sans font-bold leading-none tracking-[-0.03em] mb-6"
             style={{ fontSize: "clamp(2.5rem, 6vw, 6rem)" }}
           >
             Testimonios
@@ -67,11 +67,11 @@ export default function TestimoniosPage() {
         <div className="flex flex-col divide-y divide-white/8">
           {TESTIMONIALS.map((t, i) => (
             <blockquote key={i} className="py-12">
-              <p className="text-white text-xl leading-relaxed font-montserrat mb-6 max-w-[720px]">
+              <p className="text-white text-xl leading-relaxed font-sans mb-6 max-w-[720px]">
                 "{t.quote}"
               </p>
               <footer>
-                <p className="text-[#999999] text-sm font-500">{t.name}</p>
+                <p className="text-[#999999] text-sm font-medium">{t.name}</p>
                 <p className="text-[#555555] text-xs mt-1">{t.company}</p>
                 <p className="text-[#A80110] text-xs uppercase tracking-[0.1em] mt-1">{t.service}</p>
               </footer>
@@ -82,12 +82,12 @@ export default function TestimoniosPage() {
 
       {/* CTA */}
       <section className="max-w-[1400px] mx-auto px-6 xl:px-20 py-16 border-t border-white/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
-        <p className="text-white font-montserrat font-700 text-2xl max-w-[400px]">
+        <p className="text-white font-sans font-bold text-2xl max-w-[400px]">
           Sé el próximo proyecto de referencia.
         </p>
         <Link
           href="/contacto"
-          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-500 uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
+          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-medium uppercase tracking-[0.12em] px-8 py-4 shrink-0 transition-all duration-300 hover:bg-[#8a010d] active:scale-[0.98]"
         >
           Solicitar cotización
         </Link>

@@ -70,11 +70,11 @@ export function Differentiators() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-20 items-start">
           {/* Columna izquierda — cabecera fija */}
           <div className="diff-heading lg:col-span-2 lg:sticky lg:top-28">
-            <p className="text-[#A80110] text-xs uppercase tracking-[0.18em] font-500 mb-6">
+            <p className="text-[#A80110] text-xs uppercase tracking-[0.18em] font-medium mb-6">
               Por qué elegirnos
             </p>
             <h2
-              className="text-white font-montserrat font-700 leading-none tracking-[-0.02em] mb-6"
+              className="text-white font-sans font-bold leading-none tracking-[-0.02em] mb-6"
               style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}
             >
               Constructora con
@@ -94,11 +94,11 @@ export function Differentiators() {
             {DIFFS.map((d) => (
               <div key={d.number} className="diff-item py-8 first:pt-0 last:pb-0">
                 <div className="flex items-start gap-6">
-                  <span className="text-[#3A3A3A] font-700 text-4xl font-montserrat leading-none mt-1 w-12 shrink-0">
+                  <span className="text-[#3A3A3A] font-bold text-4xl font-sans leading-none mt-1 w-12 shrink-0">
                     {d.number}
                   </span>
                   <div>
-                    <h3 className="text-white font-montserrat font-700 text-lg mb-3">{d.title}</h3>
+                    <h3 className="text-white font-sans font-bold text-lg mb-3">{d.title}</h3>
                     <p className="text-[#999999] text-sm leading-relaxed">{d.description}</p>
                   </div>
                 </div>

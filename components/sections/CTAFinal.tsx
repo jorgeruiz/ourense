@@ -47,7 +47,7 @@ export function CTAFinal() {
 
       <div className="cta-content relative z-10 max-w-[1400px] mx-auto px-6 xl:px-20 w-full text-center">
         <h2
-          className="text-white font-montserrat font-700 leading-none tracking-[-0.03em] mb-6"
+          className="text-white font-sans font-bold leading-none tracking-[-0.03em] mb-6"
           style={{ fontSize: "clamp(2.5rem, 6vw, 6rem)" }}
         >
           Tu proyecto
@@ -59,7 +59,7 @@ export function CTAFinal() {
         </p>
         <Link
           href="/contacto"
-          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-500 uppercase tracking-[0.12em] px-10 py-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[#8a010d] active:scale-[0.98]"
+          className="inline-flex items-center gap-3 bg-[#A80110] text-white text-sm font-medium uppercase tracking-[0.12em] px-10 py-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[#8a010d] active:scale-[0.98]"
         >
           Solicitar cotización
           <span className="w-5 h-5 flex items-center justify-center bg-white/10 text-xs">→</span>

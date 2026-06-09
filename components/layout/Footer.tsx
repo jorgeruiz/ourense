@@ -18,7 +18,7 @@ export function Footer() {
               height={32}
               className="rounded-full"
             />
-            <span className="text-white font-montserrat font-700 text-sm uppercase tracking-[0.16em]">
+            <span className="text-white font-sans font-bold text-sm uppercase tracking-[0.16em]">
               Ourense
             </span>
           </Link>
