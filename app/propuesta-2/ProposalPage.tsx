@@ -68,6 +68,9 @@ export function ProposalPage() {
   const processProgressRef = useRef<HTMLDivElement>(null);
   const processCounterRef  = useRef<HTMLSpanElement>(null);
 
+  /* Stats counters */
+  const statNumRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
   /* Services */
   const serviceRowRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const serviceImgRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -168,8 +171,44 @@ export function ProposalPage() {
             scrollTrigger: { trigger: ".marquee-wrap", start: "top bottom", end: "bottom top", scrub: 2 } });
         }
 
-        gsap.from(".stat-item", { opacity: 0, y: 56, stagger: 0.14, duration: 1.0, ease: "power3.out",
-          scrollTrigger: { trigger: ".stats-section", start: "top 78%", once: true } });
+        /* ── Stats: entrance + counter desfasado por altura ── */
+        // height order: item0 (0px) → item2 (52px) → item1 (120px)
+        // delays match the vertical cascade so "higher" items count first
+        const STAT_META = [
+          { prefix: "+", target: 10,  suffix: "",  entranceDelay: 0,    counterDelay: 0    },
+          { prefix: "",  target: 100, suffix: "%", entranceDelay: 0.28, counterDelay: 0.28 },
+          { prefix: "",  target: 6,   suffix: "",  entranceDelay: 0.12, counterDelay: 0.12 },
+        ];
+
+        // Reset number text to "0" before ScrollTrigger fires
+        statNumRefs.current.forEach((el, i) => {
+          if (el) el.textContent = STAT_META[i].prefix + "0" + STAT_META[i].suffix;
+        });
+
+        // Entrance (opacity + y) staggered by visual height
+        const statItems = gsap.utils.toArray<HTMLElement>(".stat-item");
+        statItems.forEach((el, i) => {
+          gsap.from(el, {
+            opacity: 0, y: 48, duration: 0.9, ease: "power3.out",
+            delay: STAT_META[i].entranceDelay,
+            scrollTrigger: { trigger: ".stats-section", start: "top 78%", once: true },
+          });
+        });
+
+        // Counter: counts from 0 to target, desfasado por altura
+        statNumRefs.current.forEach((el, i) => {
+          if (!el) return;
+          const { prefix, target, suffix, counterDelay } = STAT_META[i];
+          const obj = { val: 0 };
+          gsap.to(obj, {
+            val: target,
+            duration: 1.5,
+            ease: "power2.out",
+            delay: counterDelay,
+            scrollTrigger: { trigger: ".stats-section", start: "top 78%", once: true },
+            onUpdate() { el.textContent = prefix + Math.round(obj.val) + suffix; },
+          });
+        });
 
         gsap.from(".mw", { opacity: 0.08, stagger: 0.03, duration: 0.25, ease: "none",
           scrollTrigger: { trigger: ".manifesto-section", start: "top 55%", end: "bottom 45%", scrub: 1 } });
@@ -334,10 +373,10 @@ export function ProposalPage() {
             { num: "+10",  label: "Años de experiencia en México",          offset: "0" },
             { num: "100%", label: "Proyectos con supervisión continua",      offset: "clamp(40px, 10vw, 120px)" },
             { num: "6",    label: "Líneas de servicio en una sola empresa",  offset: "clamp(16px, 4vw, 52px)" },
-          ].map(({ num, label, offset }) => (
+          ].map(({ num, label, offset }, i) => (
             <div key={num} className="stat-item" style={{ marginTop: offset }}>
               <div className="font-bold leading-none tracking-[-0.05em]" style={{ fontSize: "clamp(3.2rem, 8vw, 110px)" }}>
-                {num}
+                <span ref={el => { statNumRefs.current[i] = el; }}>{num}</span>
               </div>
               <div className="h-px bg-[#0A0A0A] mt-4 mb-3" />
               <p className="text-sm text-[#555] leading-snug max-w-[200px]">{label}</p>
