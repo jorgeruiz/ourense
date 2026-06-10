@@ -5,14 +5,11 @@ import {
   useContext,
   useEffect,
   useRef,
-  useState,
   useCallback,
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Loader, type LoaderHandle } from "./Loader";
-
-/* ─── Context ───────────────────────────────────────────────────────── */
 
 interface TransitionCtx {
   navigate(href: string): void;
@@ -24,44 +21,40 @@ export function useTransition() {
   return useContext(Ctx);
 }
 
-/* ─── Provider ──────────────────────────────────────────────────────── */
-
 export function TransitionProvider({ children }: { children: ReactNode }) {
-  const loaderRef      = useRef<LoaderHandle>(null);
-  const pendingHref    = useRef<string | null>(null);
-  const isNavigating   = useRef(false);
-  const router         = useRouter();
-  const pathname       = usePathname();
+  const loaderRef    = useRef<LoaderHandle>(null);
+  const isNavigating = useRef(false);
+  const pendingHref  = useRef<string | null>(null);
+  const initialDone  = useRef(false);
+  const router       = useRouter();
+  const pathname     = usePathname();
 
-  /* Initial page load — play full loader once */
-  const [initialDone, setInitialDone] = useState(false);
+  /* ── Initial page load ─────────────────────────────────────────── */
   useEffect(() => {
-    if (initialDone) return;
+    if (initialDone.current) return;
+    initialDone.current = true;
 
-    // Respect prefers-reduced-motion
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setInitialDone(true);
-      return;
-    }
-
-    loaderRef.current?.playFull().then(() => {
-      setInitialDone(true);
-    });
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    loaderRef.current?.playFull();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* When pathname changes (navigation complete) — loader is already resolving;
-     nothing needed here. If we want a reveal-in effect on entry, add it here. */
+  /* ── Detect navigation complete → lift wipe ─────────────────────── */
   useEffect(() => {
     if (!isNavigating.current) return;
     isNavigating.current = false;
+
+    // Small delay ensures Next.js has painted the new page content
+    setTimeout(() => {
+      loaderRef.current?.hideOverlay();
+    }, 80);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  /* Internal navigate: play short loader → push route */
+  /* ── navigate(): wipe up → arcs draw → push route ─────────────── */
   const navigate = useCallback((href: string) => {
     if (isNavigating.current) return;
 
-    // Respect prefers-reduced-motion
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       router.push(href);
       return;
@@ -70,10 +63,20 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
     isNavigating.current = true;
     pendingHref.current  = href;
 
-    loaderRef.current?.playShort().then(() => {
-      const h = pendingHref.current;
-      if (h) router.push(h);
-    });
+    const loader = loaderRef.current;
+    if (!loader) { router.push(href); return; }
+
+    // 1. Dark wipe slides up from bottom
+    loader.showOverlay();
+
+    // 2. After wipe in (500ms), start arcs
+    setTimeout(() => {
+      loader.playShort().then(() => {
+        // 3. Navigate — new page renders under the wipe
+        const h = pendingHref.current;
+        if (h) router.push(h);
+      });
+    }, 500);
   }, [router]);
 
   return (

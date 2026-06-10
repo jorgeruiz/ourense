@@ -23,47 +23,66 @@ function getIsTouch() {
   return _isTouch;
 }
 
-/* ─── Arc divider SVG ───────────────────────────────────────────────── */
-function ArcDivider({ flip = false }: { flip?: boolean }) {
+/* ─── OurenseMark (for nav) ──────────────────────────────────────────── */
+function OurenseMark({ size = 32 }: { size?: number }) {
   return (
-    <svg
-      viewBox="0 0 1440 80"
-      preserveAspectRatio="none"
-      width="100%"
-      height="80"
-      aria-hidden="true"
-      style={{ display: "block", transform: flip ? "scaleY(-1)" : undefined }}
-    >
-      <path d="M0,80 Q720,0 1440,80 L1440,80 L0,80 Z" fill="#0A0A0A" />
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <circle cx="50" cy="50" r="42" stroke="#A80110" strokeWidth="7" strokeLinecap="round"
+        strokeDasharray="198 66" strokeDashoffset="-8" />
+      <circle cx="50" cy="50" r="28" stroke="#A80110" strokeWidth="6" strokeLinecap="round"
+        strokeDasharray="132 44" strokeDashoffset="-5" style={{ opacity: 0.65 }} />
+      <circle cx="50" cy="50" r="14" stroke="#A80110" strokeWidth="5" strokeLinecap="round"
+        strokeDasharray="66 22" strokeDashoffset="-3" style={{ opacity: 0.35 }} />
     </svg>
   );
 }
 
-/* ─── Component ─────────────────────────────────────────────────────── */
+/* ─── Arc dividers ───────────────────────────────────────────────────── */
+function ArcDown() {
+  // Concave curve: dark sweeps down from edges, light stays at top
+  return (
+    <div style={{ background: "#F5F5F2", marginBottom: 0 }}>
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" width="100%" height="80"
+        aria-hidden="true" style={{ display: "block" }}>
+        <path d="M0,0 Q720,80 1440,0 L1440,80 L0,80 Z" fill="#0A0A0A" />
+      </svg>
+    </div>
+  );
+}
 
+function ArcUp() {
+  // Convex curve: dark exits, light returns
+  return (
+    <div style={{ background: "#0A0A0A", marginBottom: 0 }}>
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" width="100%" height="80"
+        aria-hidden="true" style={{ display: "block" }}>
+        <path d="M0,80 Q720,0 1440,80 L1440,0 L0,0 Z" fill="#F5F5F2" />
+      </svg>
+    </div>
+  );
+}
+
+/* ─── Component ─────────────────────────────────────────────────────── */
 export function ProjectDetail({ project, others }: Props) {
   /* Mini-slider state */
-  const [miniCurrent,   setMiniCurrent]   = useState(0);
-  const [overMini,      setOverMini]      = useState(false);
-  const miniSliderRef   = useRef<HTMLDivElement>(null);
-  const miniSlideRefs   = useRef<(HTMLDivElement | null)[]>([]);
-  const miniImgRefs     = useRef<(HTMLDivElement | null)[]>([]);
-  const miniCurrentRef  = useRef(0);
-  const miniCanNav      = useRef(true);
-
-  /* Scroll reveals */
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [miniCurrent,  setMiniCurrent]  = useState(0);
+  const miniSliderRef  = useRef<HTMLDivElement>(null);
+  const miniSlideRefs  = useRef<(HTMLDivElement | null)[]>([]);
+  const miniImgRefs    = useRef<(HTMLDivElement | null)[]>([]);
+  const miniCurrentRef = useRef(0);
+  const miniCanNav     = useRef(true);
 
   const isTouch = typeof window !== "undefined" ? getIsTouch() : false;
+  const d = project.details;
 
-  /* ── Init mini-slider ─────────────────────────────────────────────── */
+  /* ── Init mini-slider positions ───────────────────────────────────── */
   useEffect(() => {
     others.forEach((_, i) => {
       const el  = miniSlideRefs.current[i];
       const img = miniImgRefs.current[i];
       if (!el || !img) return;
       gsap.set(el,  { x: i === 0 ? "0%" : "100%" });
-      gsap.set(img, { x: i === 0 ? "0%" : "20%"  });
+      gsap.set(img, { x: i === 0 ? "0%" : "20%" });
     });
   }, [others]);
 
@@ -78,11 +97,10 @@ export function ProjectDetail({ project, others }: Props) {
     const newEl   = miniSlideRefs.current[newIndex];
     const prevImg = miniImgRefs.current[prev];
     const newImg  = miniImgRefs.current[newIndex];
-
     if (!prevEl || !newEl) { miniCanNav.current = true; return; }
 
     gsap.set(newEl,  { x: dir === 1 ? "100%" : "-100%" });
-    gsap.set(newImg, { x: dir === 1 ? "22%"  : "-22%"  });
+    gsap.set(newImg, { x: dir === 1 ? "22%"  : "-22%" });
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -97,7 +115,7 @@ export function ProjectDetail({ project, others }: Props) {
     tl.to(newImg,  { x: "0%",                          duration: 1.3, ease: "power3.inOut" }, 0);
   }, []);
 
-  /* ── Mini touch swipe ─────────────────────────────────────────────── */
+  /* ── Touch swipe for mini-slider ──────────────────────────────────── */
   useEffect(() => {
     const slider = miniSliderRef.current;
     if (!slider) return;
@@ -120,69 +138,88 @@ export function ProjectDetail({ project, others }: Props) {
     };
   }, [others.length, miniGoTo]);
 
-  /* ── Scroll reveals + mini-slider parallax entrance ──────────────── */
+  /* ── Scroll reveals + parallax entrance ──────────────────────────── */
   useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const ctx = gsap.context(() => {
-      // Content reveals
-      gsap.from(".proj-reveal", {
-        opacity: 0, y: 40, stagger: 0.1, duration: 0.9, ease: "power3.out",
-        scrollTrigger: { trigger: contentRef.current, start: "top 80%", once: true },
-      });
+      if (!reduced) {
+        gsap.utils.toArray<HTMLElement>(".reveal-up").forEach((el, i) => {
+          gsap.from(el, {
+            opacity: 0, y: 36,
+            duration: 0.85, ease: "power3.out",
+            delay: i * 0.07,
+            scrollTrigger: { trigger: el, start: "top 88%", once: true },
+          });
+        });
 
-      // Mini-slider parallax entrance (enters from below, different speed)
-      const mini = miniSliderRef.current;
-      if (mini) {
-        gsap.fromTo(
-          mini,
-          { y: 80 },
-          {
-            y: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: mini,
-              start: "top bottom",
-              end: "top top",
-              scrub: 1.2,
-            },
-          }
-        );
+        // Mini-slider parallax entrance
+        const mini = miniSliderRef.current;
+        if (mini) {
+          gsap.fromTo(mini,
+            { y: 80 },
+            {
+              y: 0, ease: "none",
+              scrollTrigger: {
+                trigger: mini,
+                start: "top bottom",
+                end: "top top",
+                scrub: 1.2,
+              },
+            }
+          );
+        }
       }
     });
     return () => ctx.revert();
   }, []);
 
-  const n        = others.length;
-  const prevIdx  = (miniCurrent - 1 + n) % n;
-  const nextIdx  = (miniCurrent + 1) % n;
+  const n       = others.length;
+  const prevIdx = (miniCurrent - 1 + n) % n;
+  const nextIdx = (miniCurrent + 1) % n;
 
-  /* ─── Render ─────────────────────────────────────────────────────── */
+  /* ─── Render ──────────────────────────────────────────────────────── */
   return (
     <div className="bg-[#F5F5F2] text-[#0A0A0A]">
 
-      {/* Nav */}
+      {/* ── Sticky nav ─────────────────────────────────────────────── */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 xl:px-16"
-        style={{ height: "68px" }}
+        className="fixed top-0 left-0 right-0 z-50 grid items-center px-8 xl:px-16"
+        style={{ gridTemplateColumns: "1fr auto 1fr", height: "72px" }}
       >
-        <TransitionLink href="/propuesta-3" className="flex items-center gap-2.5">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.5" stroke="#A80110" strokeWidth="1.6" strokeLinecap="round" strokeDasharray="45 14.96" />
-            <circle cx="12" cy="12" r="6.5" stroke="#0A0A0A" strokeWidth="1.3" strokeLinecap="round" strokeDasharray="31 9.85" />
-            <circle cx="12" cy="12" r="3.5" stroke="#0A0A0A" strokeWidth="1.0" strokeLinecap="round" strokeDasharray="17 4.98" />
-          </svg>
-          <span className="font-bold uppercase text-[#0A0A0A]" style={{ fontSize: "10px", letterSpacing: "0.26em" }}>Ourense</span>
+        {/* Left: back */}
+        <div className="flex items-center">
+          <TransitionLink
+            href="/propuesta-3/proyectos"
+            className="flex items-center gap-2 text-[#0A0A0A]/50 hover:text-[#0A0A0A] transition-colors"
+            style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Proyectos
+          </TransitionLink>
+        </div>
+
+        {/* Center: logo */}
+        <TransitionLink href="/propuesta-3" className="flex items-center justify-center gap-2.5">
+          <OurenseMark size={32} />
+          <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.26em", textTransform: "uppercase" }}>Ourense</span>
         </TransitionLink>
-        <TransitionLink
-          href="/propuesta-3/proyectos"
-          className="font-bold uppercase text-[#0A0A0A]/40 hover:text-[#0A0A0A] transition-colors"
-          style={{ fontSize: "10px", letterSpacing: "0.22em" }}
-        >
-          ← Proyectos
-        </TransitionLink>
+
+        {/* Right: contact */}
+        <div className="flex justify-end">
+          <TransitionLink
+            href="/contacto"
+            className="hidden sm:block font-bold uppercase text-[#0A0A0A]/50 hover:text-[#0A0A0A] transition-colors"
+            style={{ fontSize: "10px", letterSpacing: "0.22em" }}
+          >
+            Contacto
+          </TransitionLink>
+        </div>
       </nav>
 
-      {/* Hero image — full bleed, 60vh */}
-      <div className="relative overflow-hidden" style={{ height: "60vh", minHeight: "400px" }}>
+      {/* ── Hero — 100vh ────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden" style={{ height: "100dvh" }}>
         <Image
           src={project.image}
           alt={project.headline.join(" ")}
@@ -193,106 +230,217 @@ export function ProjectDetail({ project, others }: Props) {
         />
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to top, rgba(6,6,6,0.75) 0%, rgba(6,6,6,0.15) 60%)" }}
+          style={{ background: "linear-gradient(to top, rgba(6,6,6,0.88) 0%, rgba(6,6,6,0.12) 60%)" }}
         />
-        {/* Headline over hero */}
+
+        {/* Category pill */}
+        <div
+          className="absolute left-8 xl:left-16"
+          style={{ top: "clamp(5rem, 10vh, 8rem)" }}
+        >
+          <span
+            className="inline-block bg-[#A80110] text-white font-bold uppercase"
+            style={{ fontSize: "8px", letterSpacing: "0.26em", padding: "5px 12px" }}
+          >
+            {project.category}
+          </span>
+        </div>
+
+        {/* Headline — bottom left */}
         <div
           className="absolute left-8 xl:left-16 right-8 xl:right-16"
-          style={{ bottom: "clamp(3rem, 6vh, 5rem)" }}
+          style={{ bottom: "clamp(4rem, 8vh, 7rem)" }}
         >
-          <p className="text-white/45 font-bold uppercase mb-3" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>
-            {project.category} · {project.location} · {project.year}
+          <p className="text-white/40 font-bold uppercase mb-4" style={{ fontSize: "9px", letterSpacing: "0.3em" }}>
+            {project.location} · {project.year}
           </p>
-          <h1 className="font-bold text-white tracking-[-0.04em] leading-[0.88]" style={{ fontSize: "clamp(2.5rem, 7vw, 100px)" }}>
+          <h1
+            className="font-bold text-white leading-[0.88] tracking-[-0.04em]"
+            style={{ fontSize: "clamp(3rem, 8vw, 120px)" }}
+          >
             {project.headline.map((line, i) => (
               <div key={i} className="block">{line}</div>
             ))}
           </h1>
+          <p
+            className="text-white/55 mt-6 max-w-[520px] leading-[1.5]"
+            style={{ fontSize: "clamp(0.85rem, 1.4vw, 17px)" }}
+          >
+            {project.sub}
+          </p>
+        </div>
+
+        {/* Scroll hint */}
+        <div
+          className="absolute right-8 xl:right-16 flex flex-col items-center gap-2"
+          style={{ bottom: "clamp(2.5rem, 5vh, 4rem)" }}
+        >
+          <div
+            style={{
+              width: "1px",
+              height: "48px",
+              background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 100%)",
+            }}
+          />
         </div>
       </div>
 
-      {/* Arc divider (dark concave curve into content) */}
-      <ArcDivider />
+      {/* ── Brief section — light background ────────────────────────── */}
+      <div className="bg-[#F5F5F2] px-8 xl:px-16 py-20 xl:py-28">
 
-      {/* Dark content band */}
-      <div className="bg-[#0A0A0A] text-white">
-        <div ref={contentRef} className="px-8 xl:px-16 py-20 xl:py-32 max-w-[860px]">
-          <p className="proj-reveal text-white/30 uppercase font-bold mb-8" style={{ fontSize: "9px", letterSpacing: "0.3em" }}>
-            Sobre el proyecto
-          </p>
-          <p className="proj-reveal font-bold leading-[1.2] tracking-[-0.02em]" style={{ fontSize: "clamp(1.4rem, 2.8vw, 40px)" }}>
-            {project.sub}
-          </p>
+        {/* Specs grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 pb-14 border-b border-[#0A0A0A]/[0.08] mb-16">
+          {[
+            { label: "Superficie",  val: d?.area     ?? project.category },
+            { label: "Duración",    val: d?.duration ?? "—" },
+            { label: "Cliente",     val: d?.client   ?? "—" },
+            { label: "Año",         val: project.year || "—" },
+          ].map(({ label, val }) => (
+            <div key={label} className="reveal-up">
+              <p className="text-[#0A0A0A]/30 font-bold uppercase mb-2" style={{ fontSize: "9px", letterSpacing: "0.26em" }}>
+                {label}
+              </p>
+              <p className="font-bold text-[#0A0A0A] text-sm leading-snug">{val}</p>
+            </div>
+          ))}
+        </div>
 
-          {/* Specs grid */}
-          <div className="proj-reveal grid grid-cols-2 sm:grid-cols-4 gap-8 mt-16 border-t border-white/[0.08] pt-12">
-            {[
-              { label: "Categoría",  val: project.category },
-              { label: "Ubicación",  val: project.location },
-              { label: "Año",        val: project.year || "—" },
-              { label: "Alcance",    val: "Integral" },
-            ].map(({ label, val }) => (
-              <div key={label}>
-                <p className="text-white/25 uppercase font-bold mb-2" style={{ fontSize: "9px", letterSpacing: "0.24em" }}>{label}</p>
-                <p className="font-bold text-white text-sm">{val}</p>
-              </div>
+        {/* Description + services — 2 columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-16 xl:gap-24">
+          {/* Left: description paragraphs */}
+          <div className="space-y-6">
+            {(d?.description ?? [project.sub]).map((para, i) => (
+              <p
+                key={i}
+                className="reveal-up text-[#0A0A0A]/70 leading-[1.65]"
+                style={{ fontSize: "clamp(0.9rem, 1.3vw, 17px)" }}
+              >
+                {para}
+              </p>
             ))}
+          </div>
+
+          {/* Right: services */}
+          <div className="reveal-up">
+            <p className="text-[#0A0A0A]/30 font-bold uppercase mb-6" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>
+              Servicios prestados
+            </p>
+            <ul className="space-y-0">
+              {(d?.services ?? ["Construcción Integral"]).map((svc, i) => (
+                <li
+                  key={i}
+                  className="flex items-center gap-3 py-4 border-b border-[#0A0A0A]/[0.07]"
+                  style={{ fontSize: "13px", fontWeight: 500 }}
+                >
+                  <span className="w-1 h-1 rounded-full bg-[#A80110] flex-shrink-0" />
+                  {svc}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
 
-      {/* Arc divider (convex, back to light) */}
-      <ArcDivider flip />
+      {/* ── Arc down into dark band ──────────────────────────────────── */}
+      <ArcDown />
 
-      {/* Light content — CTA */}
-      <div className="bg-[#F5F5F2] px-8 xl:px-16 py-20 xl:py-32 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-10">
-        <div className="proj-reveal max-w-[480px]">
-          <p className="text-[#0A0A0A]/25 uppercase font-bold mb-5" style={{ fontSize: "9px", letterSpacing: "0.3em" }}>
-            ¿Tienes un proyecto similar?
+      {/* ── Dark band — gallery + extended content ───────────────────── */}
+      <div className="bg-[#0A0A0A] text-white">
+
+        {/* Gallery — 2 images side by side */}
+        {d?.gallery && d.gallery.length >= 2 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 px-1">
+            {d.gallery.slice(0, 2).map((src, i) => (
+              <div key={i} className="reveal-up relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
+                <Image
+                  src={src}
+                  alt={`${project.headline.join(" ")} — imagen ${i + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="50vw"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Quote */}
+        {d?.quote && (
+          <div className="px-8 xl:px-16 py-20 xl:py-28 max-w-[860px]">
+            <div
+              className="reveal-up"
+              style={{
+                width: "32px",
+                height: "2px",
+                backgroundColor: "#A80110",
+                marginBottom: "2rem",
+              }}
+            />
+            <blockquote
+              className="reveal-up font-bold leading-[1.22] tracking-[-0.025em] text-white"
+              style={{ fontSize: "clamp(1.3rem, 2.5vw, 36px)" }}
+            >
+              &ldquo;{d.quote}&rdquo;
+            </blockquote>
+            <p className="reveal-up mt-8 text-white/35 font-bold uppercase" style={{ fontSize: "9px", letterSpacing: "0.26em" }}>
+              {d.quoteAuthor}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* ── Arc up back to light ─────────────────────────────────────── */}
+      <ArcUp />
+
+      {/* ── CTA section ─────────────────────────────────────────────── */}
+      <div className="bg-[#F5F5F2] px-8 xl:px-16 py-20 xl:py-28 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-10">
+        <div className="max-w-[500px]">
+          <p className="reveal-up text-[#0A0A0A]/30 font-bold uppercase mb-5" style={{ fontSize: "9px", letterSpacing: "0.3em" }}>
+            Siguiente paso
           </p>
-          <p className="font-bold leading-[1.18] tracking-[-0.025em]" style={{ fontSize: "clamp(1.5rem, 3vw, 44px)" }}>
-            Solicita una cotización sin compromiso.
+          <p
+            className="reveal-up font-bold leading-[1.15] tracking-[-0.03em]"
+            style={{ fontSize: "clamp(1.6rem, 3.2vw, 48px)" }}
+          >
+            ¿Tienes un proyecto similar? Hablemos.
           </p>
         </div>
         <TransitionLink
           href="/contacto"
-          className="proj-reveal font-bold uppercase text-white bg-[#A80110] px-10 py-5 hover:bg-[#8a010d] active:scale-[0.98] transition-all duration-200 w-max"
-          style={{ fontSize: "10px", letterSpacing: "0.22em" }}
+          className="reveal-up font-bold uppercase text-white bg-[#A80110] hover:bg-[#8a010d] active:scale-[0.98] transition-all duration-200 w-max"
+          style={{ fontSize: "10px", letterSpacing: "0.22em", padding: "18px 36px" }}
         >
-          Iniciar proyecto →
+          Iniciar proyecto
         </TransitionLink>
       </div>
 
-      {/* ══ Mini-slider: otros proyectos ═════════════════════════════════
-          In-flow section (not fixed). Enters from below via parallax scrub.
-          Fills viewport when reached. Same goTo + EdgeReveal mechanics.     */}
+      {/* ── Mini-slider: otros proyectos ─────────────────────────────── */}
+      {/* paddingBottom=100dvh so user can scroll past and the page doesn't cut abruptly */}
+      <div style={{ paddingBottom: "80px", background: "#0A0A0A" }}>
+        {/* Label strip */}
+        <div
+          className="flex items-center justify-between px-8 xl:px-16 bg-[#0A0A0A]"
+          style={{ height: "60px" }}
+        >
+          <p className="text-white/30 font-bold uppercase" style={{ fontSize: "9px", letterSpacing: "0.32em" }}>
+            Otros proyectos
+          </p>
+          <TransitionLink
+            href="/propuesta-3/proyectos"
+            className="font-bold uppercase text-white/30 hover:text-white transition-colors"
+            style={{ fontSize: "9px", letterSpacing: "0.22em" }}
+          >
+            Ver todos
+          </TransitionLink>
+        </div>
 
-      <div style={{ paddingBottom: "100dvh" }}>
+        {/* The slider */}
         <div
           ref={miniSliderRef}
           className="relative overflow-hidden"
           style={{ height: "100dvh", cursor: isTouch ? "auto" : "none" }}
-          onMouseEnter={() => setOverMini(true)}
-          onMouseLeave={() => setOverMini(false)}
           aria-label="Otros proyectos"
         >
-          {/* Header band */}
-          <div
-            className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-8 xl:px-16 bg-[#0A0A0A]/70 backdrop-blur-sm"
-            style={{ height: "60px" }}
-          >
-            <p className="text-white/40 uppercase font-bold" style={{ fontSize: "9px", letterSpacing: "0.3em" }}>
-              Otros proyectos
-            </p>
-            <TransitionLink
-              href="/propuesta-3/proyectos"
-              className="font-bold uppercase text-white/40 hover:text-white transition-colors"
-              style={{ fontSize: "9px", letterSpacing: "0.22em" }}
-            >
-              Ver todos →
-            </TransitionLink>
-          </div>
-
           {/* Slides */}
           {others.map((s, i) => (
             <div
@@ -300,6 +448,7 @@ export function ProjectDetail({ project, others }: Props) {
               ref={el => { miniSlideRefs.current[i] = el; }}
               className="absolute inset-0 will-change-transform"
             >
+              {/* Parallax image wrap */}
               <div
                 ref={el => { miniImgRefs.current[i] = el; }}
                 className="absolute inset-y-0 will-change-transform"
@@ -314,34 +463,50 @@ export function ProjectDetail({ project, others }: Props) {
                   sizes="130vw"
                 />
               </div>
+
+              {/* Gradient */}
               <div
                 className="absolute inset-0"
-                style={{ background: "linear-gradient(to top, rgba(6,6,6,0.82) 0%, rgba(6,6,6,0.2) 55%, rgba(6,6,6,0.5) 100%)" }}
+                style={{ background: "linear-gradient(to top, rgba(6,6,6,0.85) 0%, rgba(6,6,6,0.18) 55%, rgba(6,6,6,0.45) 100%)" }}
               />
+
+              {/* Watermark number */}
+              <div
+                className="absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 font-bold text-white/[0.05] leading-none select-none pointer-events-none"
+                style={{ fontSize: "clamp(8rem, 20vw, 220px)", letterSpacing: "-0.06em" }}
+                aria-hidden="true"
+              >
+                {s.id}
+              </div>
+
+              {/* Slide info */}
               <div
                 className="absolute left-8 xl:left-16 right-8 xl:right-16"
                 style={{ bottom: "clamp(4rem, 8vh, 6.5rem)" }}
               >
-                <p className="text-white/45 font-bold uppercase mb-3" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>
+                <p className="text-white/40 font-bold uppercase mb-3" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>
                   {s.category} · {s.location} · {s.year}
                 </p>
-                <h2 className="font-bold text-white tracking-[-0.04em] leading-[0.88]" style={{ fontSize: "clamp(2.5rem, 7vw, 100px)" }}>
-                  {s.headline.map((line, li) => <div key={li} className="block">{line}</div>)}
+                <h2
+                  className="font-bold text-white leading-[0.88] tracking-[-0.04em]"
+                  style={{ fontSize: "clamp(2.5rem, 7vw, 100px)" }}
+                >
+                  {s.headline.map((line, li) => <div key={li}>{line}</div>)}
                 </h2>
-                <div className="flex gap-3 mt-6">
+                <div className="mt-6">
                   <TransitionLink
                     href={`/propuesta-3/proyectos/${s.slug}`}
-                    className="inline-flex items-center gap-2 bg-white/10 border border-white/25 text-white font-bold uppercase px-6 py-3 hover:bg-white/20 backdrop-blur-sm active:scale-[0.98] transition-all duration-200"
-                    style={{ fontSize: "10px", letterSpacing: "0.2em" }}
+                    className="inline-flex items-center gap-2 border border-white/25 text-white font-bold uppercase hover:bg-white/10 active:scale-[0.98] transition-all duration-200"
+                    style={{ fontSize: "10px", letterSpacing: "0.2em", padding: "14px 24px" }}
                   >
-                    Ver proyecto →
+                    Ver proyecto
                   </TransitionLink>
                 </div>
               </div>
             </div>
           ))}
 
-          {/* Arc edge reveals (reused, scoped to mini-slider) */}
+          {/* Edge reveals */}
           <EdgeReveal
             prevImage={others[prevIdx]?.image ?? null}
             nextImage={others[nextIdx]?.image ?? null}
@@ -366,12 +531,34 @@ export function ProjectDetail({ project, others }: Props) {
                   width: i === miniCurrent ? "28px" : "8px",
                   backgroundColor: i === miniCurrent ? "#A80110" : "rgba(255,255,255,0.2)",
                   transition: "width 0.4s ease, background-color 0.3s ease",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Vertical progress line */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 z-10 flex flex-col gap-1"
+            style={{ right: "clamp(2rem, 4vw, 4rem)" }}
+          >
+            {others.map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width: "1px",
+                  height: i === miniCurrent ? "32px" : "10px",
+                  backgroundColor: i === miniCurrent ? "#A80110" : "rgba(255,255,255,0.18)",
+                  transition: "height 0.4s ease, background-color 0.3s ease",
                 }}
               />
             ))}
           </div>
         </div>
       </div>
+
     </div>
   );
 }
