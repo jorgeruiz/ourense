@@ -3,6 +3,7 @@ import { Montserrat, Monoton } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { ConditionalShell } from "@/components/layout/ConditionalShell";
 import { SmoothScrollProvider } from "@/components/ui/SmoothScrollProvider";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -89,10 +90,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="has-grain">
         <SmoothScrollProvider>
-          <CustomCursor />
-          <Navbar />
+          <ConditionalShell><CustomCursor /></ConditionalShell>
+          <ConditionalShell><Navbar /></ConditionalShell>
           <main id="main-content">{children}</main>
-          <Footer />
+          <ConditionalShell><Footer /></ConditionalShell>
         </SmoothScrollProvider>
       </body>
     </html>
