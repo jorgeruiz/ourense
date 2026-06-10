@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
 import type { Slide } from "../../data";
 import { EdgeReveal } from "../../components/EdgeReveal";
 import { TransitionLink } from "../../components/TransitionLink";
@@ -29,6 +30,11 @@ export function ProjectDetail({ project, others }: Props) {
   /* Intro overlay */
   const introRef      = useRef<HTMLDivElement>(null);
   const introTitleRef = useRef<HTMLDivElement>(null);
+
+  /* Mini-slider cursor */
+  const cursorRef      = useRef<HTMLDivElement>(null);
+  const cursorLabelRef = useRef<HTMLSpanElement>(null);
+  const [overMini, setOverMini] = useState(false);
 
   /* Mini-slider state */
   const [miniCurrent,  setMiniCurrent]  = useState(0);
@@ -104,26 +110,53 @@ export function ProjectDetail({ project, others }: Props) {
     };
   }, [others.length, miniGoTo]);
 
-  /* ── Intro animation: white overlay → letters → slide up ─────────── */
+  /* ── Intro animation ─────────────────────────────────────────────── */
+  /* Phase 1: white overlay covers screen, title appears letter-by-letter (black)  */
+  /* Phase 2: overlay slides UP independently; title STAYS in place, color → white */
   useEffect(() => {
     const overlay = introRef.current;
     const titleEl = introTitleRef.current;
     if (!overlay || !titleEl) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) { gsap.set(overlay, { display: "none" }); return; }
+    if (reduced) {
+      gsap.set(overlay, { display: "none" });
+      gsap.set(titleEl, { display: "none" });
+      return;
+    }
 
     const chars = titleEl.querySelectorAll<HTMLElement>(".intro-char");
     gsap.set(chars, { opacity: 0 });
+    gsap.set(titleEl, { color: "#0A0A0A" });
 
     const tl = gsap.timeline();
-    /* Letters appear letter-by-letter, fast */
-    tl.to(chars, { opacity: 1, stagger: 0.035, duration: 0.15, ease: "power2.out", delay: 0.3 });
-    /* Hold briefly */
-    tl.to({}, { duration: 0.35 });
-    /* White overlay slides up */
-    tl.to(overlay, { y: "-100%", duration: 0.75, ease: "power3.inOut",
+
+    /* Phase 1: letters appear, black on white */
+    tl.to(chars, { opacity: 1, stagger: 0.032, duration: 0.12, ease: "power2.out", delay: 0.25 });
+
+    /* Hold */
+    tl.to({}, { duration: 0.3 });
+
+    /* Phase 2a: white overlay lifts — title stays fixed (it's outside the overlay) */
+    tl.to(overlay, {
+      y: "-100%",
+      duration: 0.7,
+      ease: "power3.inOut",
       onComplete: () => gsap.set(overlay, { display: "none" }),
+    }, ">");
+
+    /* Phase 2b: title color transitions black → white as hero image is revealed */
+    tl.to(titleEl, {
+      color: "#FFFFFF",
+      duration: 0.45,
+      ease: "power1.out",
+    }, "<+0.12"); /* starts 0.12s after overlay begins lifting */
+
+    /* Phase 2c: fade out the title (hero title underneath takes over visually) */
+    tl.to(titleEl, {
+      opacity: 0,
+      duration: 0.22,
+      onComplete: () => gsap.set(titleEl, { display: "none" }),
     });
 
     return () => { tl.kill(); };
@@ -165,6 +198,39 @@ export function ProjectDetail({ project, others }: Props) {
     return () => ctx.revert();
   }, []);
 
+  /* ── Mini-slider cursor tracking ─────────────────────────────────── */
+  useEffect(() => {
+    if (isTouch) return;
+    const slider = miniSliderRef.current;
+    if (!slider) return;
+
+    const EDGE = 0.28;
+    const onMove = (e: MouseEvent) => {
+      const cursor = cursorRef.current;
+      if (cursor) cursor.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
+
+      const label = cursorLabelRef.current;
+      if (label) {
+        const pct  = e.clientX / window.innerWidth;
+        const n    = others.length;
+        const prev = (miniCurrentRef.current - 1 + n) % n;
+        const next = (miniCurrentRef.current + 1) % n;
+        if (pct < EDGE) {
+          label.textContent = `← ${others[prev].headline[0]}`;
+          label.style.opacity = "1";
+        } else if (pct > (1 - EDGE)) {
+          label.textContent = `${others[next].headline[0]} →`;
+          label.style.opacity = "1";
+        } else {
+          label.style.opacity = "0";
+        }
+      }
+    };
+
+    slider.addEventListener("mousemove", onMove, { passive: true });
+    return () => slider.removeEventListener("mousemove", onMove);
+  }, [isTouch, others]);
+
   const n       = others.length;
   const prevIdx = (miniCurrent - 1 + n) % n;
   const nextIdx = (miniCurrent + 1) % n;
@@ -173,18 +239,20 @@ export function ProjectDetail({ project, others }: Props) {
   return (
     <div className="bg-[#F5F5F2] text-[#0A0A0A]">
 
-      {/* ── Intro overlay: white screen, title letter-by-letter ────── */}
+      {/* ── Intro overlay: white bg only — slides up independently ── */}
       <div
         ref={introRef}
-        className="fixed inset-0 z-[9990] bg-white flex flex-col justify-end px-8 xl:px-16"
-        style={{ paddingBottom: "clamp(4rem, 8vh, 7rem)" }}
+        className="fixed inset-0 z-[9989] bg-white pointer-events-none"
+      />
+
+      {/* ── Intro title: OUTSIDE overlay so it stays when overlay lifts ── */}
+      <div
+        ref={introTitleRef}
+        className="fixed z-[9990] pointer-events-none px-8 xl:px-16"
+        style={{ left: 0, right: 0, bottom: "clamp(4rem, 8vh, 7rem)" }}
       >
-        <p className="text-[#0A0A0A]/30 font-bold uppercase mb-4" style={{ fontSize: "9px", letterSpacing: "0.3em" }}>
-          {project.location} · {project.year}
-        </p>
         <div
-          ref={introTitleRef}
-          className="font-bold text-[#0A0A0A] leading-[0.88] tracking-[-0.04em]"
+          className="font-bold leading-[0.88] tracking-[-0.04em]"
           style={{ fontSize: "clamp(3rem, 8vw, 120px)" }}
         >
           {project.headline.map((line, li) => (
@@ -198,6 +266,42 @@ export function ProjectDetail({ project, others }: Props) {
           ))}
         </div>
       </div>
+
+      {/* ── Custom cursor for mini-slider ─────────────────────────── */}
+      {!isTouch && (
+        <div
+          ref={cursorRef}
+          className="fixed top-0 left-0 z-[9999] pointer-events-none select-none"
+          style={{
+            transform: "translate(-999px,-999px)",
+            opacity: overMini ? 1 : 0,
+            transition: "opacity 0.2s ease",
+          }}
+        >
+          <div style={{
+            width: "10px", height: "10px",
+            border: "1.5px solid rgba(255,255,255,0.85)",
+            borderRadius: "50%",
+            marginLeft: "-5px", marginTop: "-5px",
+          }} />
+          <span
+            ref={cursorLabelRef}
+            style={{
+              position: "absolute",
+              left: "16px",
+              top: "-7px",
+              fontSize: "9px",
+              fontWeight: 700,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: "white",
+              whiteSpace: "nowrap",
+              opacity: 0,
+              transition: "opacity 0.18s ease",
+            }}
+          />
+        </div>
+      )}
 
       {/* ── Sticky nav ─────────────────────────────────────────────── */}
       <nav
@@ -451,6 +555,8 @@ export function ProjectDetail({ project, others }: Props) {
           className="relative overflow-hidden"
           style={{ height: "100dvh", cursor: isTouch ? "auto" : "none" }}
           aria-label="Otros proyectos"
+          onMouseEnter={() => setOverMini(true)}
+          onMouseLeave={() => { setOverMini(false); if (cursorLabelRef.current) cursorLabelRef.current.style.opacity = "0"; }}
         >
           {/* Slides */}
           {others.map((s, i) => (
@@ -505,13 +611,13 @@ export function ProjectDetail({ project, others }: Props) {
                   {s.headline.map((line, li) => <div key={li}>{line}</div>)}
                 </h2>
                 <div className="mt-6">
-                  <TransitionLink
+                  <Link
                     href={`/propuesta-3/proyectos/${s.slug}`}
                     className="inline-flex items-center gap-2 border border-white/25 text-white font-bold uppercase hover:bg-white/10 active:scale-[0.98] transition-all duration-200"
                     style={{ fontSize: "10px", letterSpacing: "0.2em", padding: "14px 24px" }}
                   >
                     Ver proyecto
-                  </TransitionLink>
+                  </Link>
                 </div>
               </div>
             </div>

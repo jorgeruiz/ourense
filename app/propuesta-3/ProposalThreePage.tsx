@@ -458,11 +458,11 @@ export function ProposalThreePage() {
                   </TransitionLink>
                 ) : (
                   <>
-                    <TransitionLink href={`/propuesta-3/proyectos/${s.slug}`}
+                    <Link href={`/propuesta-3/proyectos/${s.slug}`}
                       className="inline-flex items-center gap-2 bg-white/[0.08] border border-white/20 text-white font-bold uppercase px-7 py-3.5 hover:bg-white/[0.16] backdrop-blur-sm active:scale-[0.98] transition-all duration-200"
                       style={{ fontSize: "10px", letterSpacing: "0.2em" }}>
                       Ver proyecto →
-                    </TransitionLink>
+                    </Link>
                     <TransitionLink href="/propuesta-3/proyectos"
                       className="inline-flex items-center gap-2 border border-white/[0.15] text-white/50 font-bold uppercase px-7 py-3.5 hover:text-white hover:border-white/40 active:scale-[0.98] transition-all duration-200"
                       style={{ fontSize: "10px", letterSpacing: "0.2em" }}>
@@ -514,48 +514,64 @@ export function ProposalThreePage() {
       {/* ══ Spacer (slider is fixed, this pushes content below) ════════ */}
       <div style={{ height: "100dvh" }} aria-hidden="true" />
 
-      {/* ══ Footer — light, ~30dvh, CTA + contact ════════════════════ */}
-      <footer className="relative z-10 bg-[#F5F5F2]" style={{ minHeight: "30dvh" }}>
+      {/* ══ Footer — light, FIXED 30dvh, no overflow ═════════════════ */}
+      <footer
+        className="relative z-10 bg-[#F5F5F2]"
+        style={{ height: "30dvh", overflow: "hidden" }}
+      >
+        {/* Top border */}
         <div className="h-px bg-[#0A0A0A]/[0.08]" />
-        <div className="px-8 xl:px-16 py-12 xl:py-16 flex flex-col" style={{ minHeight: "calc(30dvh - 1px)" }}>
 
-          {/* Top: logo + CTA */}
-          <div className="flex items-start justify-between mb-auto">
+        {/* Full-height flex layout */}
+        <div
+          className="h-full px-8 xl:px-16 py-8 xl:py-10 flex flex-col justify-between"
+          style={{ height: "calc(30dvh - 1px)" }}
+        >
+          {/* Row 1: logo + CTA */}
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span style={{ fontFamily: "var(--font-display-base, serif)", fontSize: "40px", color: "#A80110", lineHeight: 1 }}>O</span>
-              <span className="font-bold uppercase text-[#0A0A0A]/40" style={{ fontSize: "10px", letterSpacing: "0.26em" }}>Ourense</span>
+              <span style={{ fontFamily: "var(--font-display-base, serif)", fontSize: "36px", color: "#A80110", lineHeight: 1 }}>O</span>
+              <span className="font-bold uppercase text-[#0A0A0A]/35 hidden sm:block" style={{ fontSize: "10px", letterSpacing: "0.26em" }}>Ourense</span>
             </div>
             <Link
               href="/contacto"
-              className="inline-flex items-center gap-3 bg-[#A80110] text-white font-bold uppercase px-7 py-3.5 hover:bg-[#8a010d] active:scale-[0.98] transition-all duration-200"
-              style={{ fontSize: "10px", letterSpacing: "0.2em" }}
+              className="inline-flex items-center gap-2 bg-[#A80110] text-white font-bold uppercase hover:bg-[#8a010d] active:scale-[0.98] transition-all duration-200"
+              style={{ fontSize: "10px", letterSpacing: "0.2em", padding: "12px 24px" }}
             >
               Iniciar proyecto →
             </Link>
           </div>
 
-          {/* Bottom: contact data + nav links */}
-          <div className="flex flex-wrap items-end justify-between gap-8 pt-10 mt-10 border-t border-[#0A0A0A]/[0.07]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
-              <div>
-                <p className="text-[#0A0A0A]/30 font-bold uppercase mb-1.5" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>Teléfono</p>
-                <a href="tel:+525593542263" className="font-bold text-sm text-[#0A0A0A] hover:text-[#A80110] transition-colors duration-150">+52 (55) 9354 2263</a>
-              </div>
-              <div>
-                <p className="text-[#0A0A0A]/30 font-bold uppercase mb-1.5" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>Email</p>
-                <a href="mailto:infoorg@oocsourense.com.mx" className="font-bold text-sm text-[#0A0A0A] hover:text-[#A80110] transition-colors duration-150">infoorg@oocsourense.com.mx</a>
-              </div>
-              <div>
-                <p className="text-[#0A0A0A]/30 font-bold uppercase mb-1.5" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>Sede</p>
-                <p className="font-bold text-sm text-[#0A0A0A]">Col. Florida, Álvaro Obregón, CDMX</p>
-              </div>
+          {/* Row 2: contact strip + nav links */}
+          <div className="border-t border-[#0A0A0A]/[0.07] pt-5 flex flex-wrap items-end justify-between gap-4">
+            <div className="flex flex-wrap gap-x-8 gap-y-2">
+              <a href="tel:+525593542263"
+                className="font-bold text-[#0A0A0A] hover:text-[#A80110] transition-colors duration-150"
+                style={{ fontSize: "12px" }}
+              >
+                +52 (55) 9354 2263
+              </a>
+              <a href="mailto:infoorg@oocsourense.com.mx"
+                className="font-bold text-[#0A0A0A] hover:text-[#A80110] transition-colors duration-150 hidden md:block"
+                style={{ fontSize: "12px" }}
+              >
+                infoorg@oocsourense.com.mx
+              </a>
+              <span className="text-[#0A0A0A]/35 hidden lg:block" style={{ fontSize: "12px" }}>
+                Col. Florida, Álvaro Obregón, CDMX
+              </span>
             </div>
-            <div className="flex gap-6">
-              <Link href="/propuesta-2" className="text-[#0A0A0A]/25 hover:text-[#0A0A0A] transition-colors font-bold uppercase" style={{ fontSize: "10px", letterSpacing: "0.2em" }}>Propuesta 02</Link>
-              <Link href="/" className="text-[#0A0A0A]/25 hover:text-[#0A0A0A] transition-colors font-bold uppercase" style={{ fontSize: "10px", letterSpacing: "0.2em" }}>Propuesta 01</Link>
+            <div className="flex gap-5 shrink-0">
+              <Link href="/propuesta-2"
+                className="text-[#0A0A0A]/25 hover:text-[#0A0A0A] transition-colors font-bold uppercase"
+                style={{ fontSize: "10px", letterSpacing: "0.2em" }}
+              >Propuesta 02</Link>
+              <Link href="/"
+                className="text-[#0A0A0A]/25 hover:text-[#0A0A0A] transition-colors font-bold uppercase"
+                style={{ fontSize: "10px", letterSpacing: "0.2em" }}
+              >Propuesta 01</Link>
             </div>
           </div>
-
         </div>
       </footer>
     </div>
