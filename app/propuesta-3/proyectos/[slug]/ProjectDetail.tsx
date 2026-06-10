@@ -30,6 +30,7 @@ export function ProjectDetail({ project, others }: Props) {
   /* Intro overlay */
   const introRef      = useRef<HTMLDivElement>(null);
   const introTitleRef = useRef<HTMLDivElement>(null);
+  const heroTitleRef  = useRef<HTMLHeadingElement>(null);
 
   /* Mini-slider cursor */
   const cursorRef      = useRef<HTMLDivElement>(null);
@@ -122,12 +123,15 @@ export function ProjectDetail({ project, others }: Props) {
     if (reduced) {
       gsap.set(overlay, { display: "none" });
       gsap.set(titleEl, { display: "none" });
+      if (heroTitleRef.current) gsap.set(heroTitleRef.current, { opacity: 1 });
       return;
     }
 
     const chars = titleEl.querySelectorAll<HTMLElement>(".intro-char");
     gsap.set(chars, { opacity: 0 });
     gsap.set(titleEl, { color: "#0A0A0A" });
+    /* Hero title hidden until intro title exits */
+    if (heroTitleRef.current) gsap.set(heroTitleRef.current, { opacity: 0 });
 
     const tl = gsap.timeline();
 
@@ -152,11 +156,17 @@ export function ProjectDetail({ project, others }: Props) {
       ease: "power1.out",
     }, "<+0.12"); /* starts 0.12s after overlay begins lifting */
 
-    /* Phase 2c: fade out the title (hero title underneath takes over visually) */
+    /* Phase 2c: fade out intro title and simultaneously fade in hero title */
     tl.to(titleEl, {
       opacity: 0,
       duration: 0.22,
-      onComplete: () => gsap.set(titleEl, { display: "none" }),
+      onComplete: () => {
+        gsap.set(titleEl, { display: "none" });
+        /* Reveal hero title now that intro title is gone */
+        if (heroTitleRef.current) {
+          gsap.to(heroTitleRef.current, { opacity: 1, duration: 0.25, ease: "power2.out" });
+        }
+      },
     });
 
     return () => { tl.kill(); };
@@ -386,6 +396,7 @@ export function ProjectDetail({ project, others }: Props) {
             {project.location} · {project.year}
           </p>
           <h1
+            ref={heroTitleRef}
             className="font-bold text-white leading-[0.88] tracking-[-0.04em]"
             style={{ fontSize: "clamp(3rem, 8vw, 120px)" }}
           >
