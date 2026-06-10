@@ -50,6 +50,7 @@ export function ProposalThreePage() {
 
   const cursorSide    = useRef<"left" | "right">("right");
   const cursorRef     = useRef<HTMLDivElement>(null);
+  const cursorLabelRef = useRef<HTMLSpanElement>(null);
   const menuRef       = useRef<HTMLDivElement>(null);
   const mainPanelRef  = useRef<HTMLDivElement>(null);
   const svcPanelRef   = useRef<HTMLDivElement>(null);
@@ -64,13 +65,35 @@ export function ProposalThreePage() {
   useEffect(() => {
     if (getIsTouch()) return;
     const cursor = cursorRef.current;
+    const label  = cursorLabelRef.current;
     if (!cursor) return;
+    const EDGE = 0.28;
     const onMove = (e: MouseEvent) => {
       cursor.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
-      cursorSide.current = e.clientX < window.innerWidth / 2 ? "left" : "right";
+      const pct = e.clientX / window.innerWidth;
+      cursorSide.current = pct < 0.5 ? "left" : "right";
+
+      /* Show project name when near edge */
+      if (label) {
+        const n     = SLIDES.length;
+        const prevI = (currentRef.current - 1 + n) % n;
+        const nextI = (currentRef.current + 1) % n;
+        if (pct < EDGE) {
+          label.textContent = `← ${SLIDES[prevI].headline[0]}`;
+          label.style.opacity = "1";
+          label.style.left = "16px";
+        } else if (pct > (1 - EDGE)) {
+          label.textContent = `${SLIDES[nextI].headline[0]} →`;
+          label.style.opacity = "1";
+          label.style.left = "16px";
+        } else {
+          label.style.opacity = "0";
+        }
+      }
     };
     window.addEventListener("mousemove", onMove, { passive: true });
     return () => window.removeEventListener("mousemove", onMove);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* ── Init slides ────────────────────────────────────────────────── */
@@ -226,7 +249,7 @@ export function ProposalThreePage() {
   return (
     <div className="bg-[#0A0A0A] overflow-x-hidden">
 
-      {/* ══ Cursor ═══════════════════════════════════════════════════ */}
+      {/* ══ Cursor — minimal ring + project label on edge ════════════ */}
       {!isTouch && (
         <div
           ref={cursorRef}
@@ -234,22 +257,34 @@ export function ProposalThreePage() {
           className="fixed top-0 left-0 z-[9999] pointer-events-none select-none"
           style={{
             transform: "translate(-999px,-999px)",
-            marginLeft: "-20px", marginTop: "-8px",
             opacity: overSlider && !onNav && menuState === "closed" ? 1 : 0,
-            transition: "opacity 0.15s ease",
+            transition: "opacity 0.2s ease",
           }}
         >
-          {cursorSide.current === "left" ? (
-            <div className="flex items-center gap-2">
-              <span className="text-white font-bold" style={{ fontSize: "14px" }}>←</span>
-              <span className="text-white/60 font-bold uppercase" style={{ fontSize: "9px", letterSpacing: "0.22em" }}>Anterior</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-white/60 font-bold uppercase" style={{ fontSize: "9px", letterSpacing: "0.22em" }}>Siguiente</span>
-              <span className="text-white font-bold" style={{ fontSize: "14px" }}>→</span>
-            </div>
-          )}
+          {/* Ring dot — centered at cursor */}
+          <div style={{
+            width: "10px", height: "10px",
+            border: "1.5px solid rgba(255,255,255,0.85)",
+            borderRadius: "50%",
+            marginLeft: "-5px", marginTop: "-5px",
+          }} />
+          {/* Project name label — appears when near edge */}
+          <span
+            ref={cursorLabelRef}
+            style={{
+              position: "absolute",
+              left: "16px",
+              top: "-7px",
+              fontSize: "9px",
+              fontWeight: 700,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: "white",
+              whiteSpace: "nowrap",
+              opacity: 0,
+              transition: "opacity 0.18s ease",
+            }}
+          />
         </div>
       )}
 
@@ -260,9 +295,12 @@ export function ProposalThreePage() {
         onMouseEnter={() => setOnNav(true)}
         onMouseLeave={() => setOnNav(false)}
       >
-        {/* Left: logo */}
+        {/* Left: logo — Monoton "O" */}
         <TransitionLink href="/" className="flex items-center gap-3">
-          <OurenseMark size={40} />
+          <span
+            aria-hidden="true"
+            style={{ fontFamily: "var(--font-display-base, serif)", fontSize: "46px", color: "#A80110", lineHeight: 1, display: "block" }}
+          >O</span>
           <span className="font-bold uppercase text-white hidden sm:block" style={{ fontSize: "10px", letterSpacing: "0.26em" }}>
             Ourense
           </span>
@@ -473,22 +511,51 @@ export function ProposalThreePage() {
         </div>
       </section>
 
-      {/* ══ Spacer + minimal footer ══════════════════════════════════ */}
+      {/* ══ Spacer (slider is fixed, this pushes content below) ════════ */}
       <div style={{ height: "100dvh" }} aria-hidden="true" />
 
-      <footer className="relative z-10 bg-[#0A0A0A] border-t border-white/[0.07] px-8 xl:px-16 py-7">
-        <div className="flex flex-wrap items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <OurenseMark size={28} />
-            <span className="font-bold uppercase text-white/60" style={{ fontSize: "10px", letterSpacing: "0.26em" }}>Ourense</span>
+      {/* ══ Footer — light, ~30dvh, CTA + contact ════════════════════ */}
+      <footer className="relative z-10 bg-[#F5F5F2]" style={{ minHeight: "30dvh" }}>
+        <div className="h-px bg-[#0A0A0A]/[0.08]" />
+        <div className="px-8 xl:px-16 py-12 xl:py-16 flex flex-col" style={{ minHeight: "calc(30dvh - 1px)" }}>
+
+          {/* Top: logo + CTA */}
+          <div className="flex items-start justify-between mb-auto">
+            <div className="flex items-center gap-3">
+              <span style={{ fontFamily: "var(--font-display-base, serif)", fontSize: "40px", color: "#A80110", lineHeight: 1 }}>O</span>
+              <span className="font-bold uppercase text-[#0A0A0A]/40" style={{ fontSize: "10px", letterSpacing: "0.26em" }}>Ourense</span>
+            </div>
+            <Link
+              href="/contacto"
+              className="inline-flex items-center gap-3 bg-[#A80110] text-white font-bold uppercase px-7 py-3.5 hover:bg-[#8a010d] active:scale-[0.98] transition-all duration-200"
+              style={{ fontSize: "10px", letterSpacing: "0.2em" }}
+            >
+              Iniciar proyecto →
+            </Link>
           </div>
-          <p className="text-white/20 hidden md:block" style={{ fontSize: "11px" }}>
-            Av. Insurgentes Sur 1748-501, Col. Florida, Álvaro Obregón, CDMX
-          </p>
-          <div className="flex gap-6">
-            <Link href="/propuesta-2" className="text-white/25 hover:text-white/70 transition-colors uppercase font-bold" style={{ fontSize: "10px", letterSpacing: "0.2em" }}>Propuesta 02</Link>
-            <Link href="/" className="text-white/25 hover:text-white/70 transition-colors uppercase font-bold" style={{ fontSize: "10px", letterSpacing: "0.2em" }}>Propuesta 01</Link>
+
+          {/* Bottom: contact data + nav links */}
+          <div className="flex flex-wrap items-end justify-between gap-8 pt-10 mt-10 border-t border-[#0A0A0A]/[0.07]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
+              <div>
+                <p className="text-[#0A0A0A]/30 font-bold uppercase mb-1.5" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>Teléfono</p>
+                <a href="tel:+525593542263" className="font-bold text-sm text-[#0A0A0A] hover:text-[#A80110] transition-colors duration-150">+52 (55) 9354 2263</a>
+              </div>
+              <div>
+                <p className="text-[#0A0A0A]/30 font-bold uppercase mb-1.5" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>Email</p>
+                <a href="mailto:infoorg@oocsourense.com.mx" className="font-bold text-sm text-[#0A0A0A] hover:text-[#A80110] transition-colors duration-150">infoorg@oocsourense.com.mx</a>
+              </div>
+              <div>
+                <p className="text-[#0A0A0A]/30 font-bold uppercase mb-1.5" style={{ fontSize: "9px", letterSpacing: "0.28em" }}>Sede</p>
+                <p className="font-bold text-sm text-[#0A0A0A]">Col. Florida, Álvaro Obregón, CDMX</p>
+              </div>
+            </div>
+            <div className="flex gap-6">
+              <Link href="/propuesta-2" className="text-[#0A0A0A]/25 hover:text-[#0A0A0A] transition-colors font-bold uppercase" style={{ fontSize: "10px", letterSpacing: "0.2em" }}>Propuesta 02</Link>
+              <Link href="/" className="text-[#0A0A0A]/25 hover:text-[#0A0A0A] transition-colors font-bold uppercase" style={{ fontSize: "10px", letterSpacing: "0.2em" }}>Propuesta 01</Link>
+            </div>
           </div>
+
         </div>
       </footer>
     </div>

@@ -37,33 +37,12 @@ function OurenseMark({ size = 32 }: { size?: number }) {
   );
 }
 
-/* ─── Arc dividers ───────────────────────────────────────────────────── */
-function ArcDown() {
-  // Concave curve: dark sweeps down from edges, light stays at top
-  return (
-    <div style={{ background: "#F5F5F2", marginBottom: 0 }}>
-      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" width="100%" height="80"
-        aria-hidden="true" style={{ display: "block" }}>
-        <path d="M0,0 Q720,80 1440,0 L1440,80 L0,80 Z" fill="#0A0A0A" />
-      </svg>
-    </div>
-  );
-}
-
-function ArcUp() {
-  // Convex curve: dark exits, light returns
-  return (
-    <div style={{ background: "#0A0A0A", marginBottom: 0 }}>
-      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" width="100%" height="80"
-        aria-hidden="true" style={{ display: "block" }}>
-        <path d="M0,80 Q720,0 1440,80 L1440,0 L0,0 Z" fill="#F5F5F2" />
-      </svg>
-    </div>
-  );
-}
-
 /* ─── Component ─────────────────────────────────────────────────────── */
 export function ProjectDetail({ project, others }: Props) {
+  /* Intro overlay */
+  const introRef      = useRef<HTMLDivElement>(null);
+  const introTitleRef = useRef<HTMLDivElement>(null);
+
   /* Mini-slider state */
   const [miniCurrent,  setMiniCurrent]  = useState(0);
   const miniSliderRef  = useRef<HTMLDivElement>(null);
@@ -138,6 +117,32 @@ export function ProjectDetail({ project, others }: Props) {
     };
   }, [others.length, miniGoTo]);
 
+  /* ── Intro animation: white overlay → letters → slide up ─────────── */
+  useEffect(() => {
+    const overlay = introRef.current;
+    const titleEl = introTitleRef.current;
+    if (!overlay || !titleEl) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) { gsap.set(overlay, { display: "none" }); return; }
+
+    const chars = titleEl.querySelectorAll<HTMLElement>(".intro-char");
+    gsap.set(chars, { opacity: 0 });
+
+    const tl = gsap.timeline();
+    /* Letters appear letter-by-letter, fast */
+    tl.to(chars, { opacity: 1, stagger: 0.035, duration: 0.15, ease: "power2.out", delay: 0.3 });
+    /* Hold briefly */
+    tl.to({}, { duration: 0.35 });
+    /* White overlay slides up */
+    tl.to(overlay, { y: "-100%", duration: 0.75, ease: "power3.inOut",
+      onComplete: () => gsap.set(overlay, { display: "none" }),
+    });
+
+    return () => { tl.kill(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /* ── Scroll reveals + parallax entrance ──────────────────────────── */
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -180,6 +185,32 @@ export function ProjectDetail({ project, others }: Props) {
   /* ─── Render ──────────────────────────────────────────────────────── */
   return (
     <div className="bg-[#F5F5F2] text-[#0A0A0A]">
+
+      {/* ── Intro overlay: white screen, title letter-by-letter ────── */}
+      <div
+        ref={introRef}
+        className="fixed inset-0 z-[9990] bg-white flex flex-col justify-end px-8 xl:px-16"
+        style={{ paddingBottom: "clamp(4rem, 8vh, 7rem)" }}
+      >
+        <p className="text-[#0A0A0A]/30 font-bold uppercase mb-4" style={{ fontSize: "9px", letterSpacing: "0.3em" }}>
+          {project.location} · {project.year}
+        </p>
+        <div
+          ref={introTitleRef}
+          className="font-bold text-[#0A0A0A] leading-[0.88] tracking-[-0.04em]"
+          style={{ fontSize: "clamp(3rem, 8vw, 120px)" }}
+        >
+          {project.headline.map((line, li) => (
+            <div key={li} className="block">
+              {line.split("").map((char, ci) => (
+                <span key={ci} className="intro-char" style={{ display: "inline-block" }}>
+                  {char === " " ? "\u00A0" : char}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ── Sticky nav ─────────────────────────────────────────────── */}
       <nav
@@ -341,59 +372,43 @@ export function ProjectDetail({ project, others }: Props) {
         </div>
       </div>
 
-      {/* ── Arc down into dark band ──────────────────────────────────── */}
-      <ArcDown />
+      {/* ── Gallery — light bg, full-bleed images ────────────────────── */}
+      {d?.gallery && d.gallery.length >= 2 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#0A0A0A]/[0.06]">
+          {d.gallery.slice(0, 2).map((src, i) => (
+            <div key={i} className="reveal-up relative overflow-hidden bg-[#F5F5F2]" style={{ aspectRatio: "4/3" }}>
+              <Image
+                src={src}
+                alt={`${project.headline.join(" ")} — imagen ${i + 1}`}
+                fill
+                className="object-cover"
+                sizes="50vw"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
-      {/* ── Dark band — gallery + extended content ───────────────────── */}
-      <div className="bg-[#0A0A0A] text-white">
-
-        {/* Gallery — 2 images side by side */}
-        {d?.gallery && d.gallery.length >= 2 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 px-1">
-            {d.gallery.slice(0, 2).map((src, i) => (
-              <div key={i} className="reveal-up relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
-                <Image
-                  src={src}
-                  alt={`${project.headline.join(" ")} — imagen ${i + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="50vw"
-                />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Quote */}
-        {d?.quote && (
-          <div className="px-8 xl:px-16 py-20 xl:py-28 max-w-[860px]">
-            <div
-              className="reveal-up"
-              style={{
-                width: "32px",
-                height: "2px",
-                backgroundColor: "#A80110",
-                marginBottom: "2rem",
-              }}
-            />
+      {/* ── Quote — light bg, typographic ───────────────────────────── */}
+      {d?.quote && (
+        <div className="px-8 xl:px-16 py-20 xl:py-28 border-t border-[#0A0A0A]/[0.06]">
+          <div className="max-w-[860px]">
+            <div className="reveal-up h-px w-8 bg-[#A80110] mb-10" />
             <blockquote
-              className="reveal-up font-bold leading-[1.22] tracking-[-0.025em] text-white"
+              className="reveal-up font-bold leading-[1.22] tracking-[-0.025em] text-[#0A0A0A]"
               style={{ fontSize: "clamp(1.3rem, 2.5vw, 36px)" }}
             >
               &ldquo;{d.quote}&rdquo;
             </blockquote>
-            <p className="reveal-up mt-8 text-white/35 font-bold uppercase" style={{ fontSize: "9px", letterSpacing: "0.26em" }}>
+            <p className="reveal-up mt-8 text-[#0A0A0A]/35 font-bold uppercase" style={{ fontSize: "9px", letterSpacing: "0.26em" }}>
               {d.quoteAuthor}
             </p>
           </div>
-        )}
-      </div>
-
-      {/* ── Arc up back to light ─────────────────────────────────────── */}
-      <ArcUp />
+        </div>
+      )}
 
       {/* ── CTA section ─────────────────────────────────────────────── */}
-      <div className="bg-[#F5F5F2] px-8 xl:px-16 py-20 xl:py-28 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-10">
+      <div className="bg-[#F5F5F2] px-8 xl:px-16 py-20 xl:py-28 border-t border-[#0A0A0A]/[0.06] flex flex-col sm:flex-row sm:items-end sm:justify-between gap-10">
         <div className="max-w-[500px]">
           <p className="reveal-up text-[#0A0A0A]/30 font-bold uppercase mb-5" style={{ fontSize: "9px", letterSpacing: "0.3em" }}>
             Siguiente paso

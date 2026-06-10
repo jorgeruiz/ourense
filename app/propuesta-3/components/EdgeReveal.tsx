@@ -26,7 +26,7 @@ interface Props {
  */
 
 const ZONE      = 0.28;  // active zone: within 28% of each edge
-const MAX_W     = 22;    // max half-width of ellipse (% of element width)
+const MAX_W     = 11;    // max half-width of ellipse (% of element width) — 50% narrower for less intrusion
 const DUR_IN    = 0.55;
 const DUR_OUT   = 0.7;
 const EASE_IN   = "power2.out";
