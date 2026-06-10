@@ -39,12 +39,14 @@ export function ProposalPage() {
 
     const ctx = gsap.context(() => {
 
-      /* Hero words — slide up from overflow-hidden clip */
+      /* Hero words — fade + subtle rise (sin overflow-hidden clip para evitar
+         el estado invisible en producción/mobile si GSAP no completa) */
       gsap.from(".hw", {
-        yPercent: 115,
-        stagger: 0.055,
-        duration: 1.5,
-        ease: "power4.out",
+        opacity: 0,
+        y: 28,
+        stagger: 0.06,
+        duration: 1.1,
+        ease: "power3.out",
         delay: 0.15,
       });
 
@@ -127,10 +129,11 @@ export function ProposalPage() {
 
       /* CTA headline */
       gsap.from(".cta-hw", {
-        yPercent: 115,
+        opacity: 0,
+        y: 28,
         stagger: 0.065,
-        duration: 1.3,
-        ease: "power4.out",
+        duration: 1.1,
+        ease: "power3.out",
         scrollTrigger: {
           trigger: ".cta-section",
           start: "top 78%",
@@ -186,12 +189,10 @@ export function ProposalPage() {
         <div className="flex-1 flex items-center">
           <h1 className="font-bold tracking-[-0.035em] leading-none w-full" style={{ fontSize: "clamp(3rem, 9.6vw, 155px)" }}>
             {HERO_LINES.map((line, i) => (
-              <div key={i} className="overflow-hidden">
-                <div className="hw block leading-[0.9]">
-                  {i === 2 ? (
-                    <>NO PUEDEN<span className="text-[#A80110]">.</span></>
-                  ) : line}
-                </div>
+              <div key={i} className="hw block leading-[0.9]">
+                {i === 2 ? (
+                  <>NO PUEDEN<span className="text-[#A80110]">.</span></>
+                ) : line}
               </div>
             ))}
           </h1>
@@ -364,13 +365,12 @@ export function ProposalPage() {
           {/* Big question */}
           <div>
             {["¿LISTO PARA", "CONSTRUIR?"].map((line, i) => (
-              <div key={i} className="overflow-hidden">
-                <div
-                  className="cta-hw font-bold leading-[0.9] tracking-[-0.035em]"
-                  style={{ fontSize: "clamp(3.2rem, 9vw, 145px)" }}
-                >
-                  {line}
-                </div>
+              <div
+                key={i}
+                className="cta-hw font-bold leading-[0.9] tracking-[-0.035em]"
+                style={{ fontSize: "clamp(3.2rem, 9vw, 145px)" }}
+              >
+                {line}
               </div>
             ))}
           </div>

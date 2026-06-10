@@ -22,8 +22,8 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Propuesta-2 tiene su propia nav light — no renderizar la dark global
-  if (pathname?.startsWith("/propuesta-2")) return null;
+  // Propuestas tienen su propia nav — no renderizar la dark global
+  if (pathname?.startsWith("/propuesta-2") || pathname?.startsWith("/propuesta-3")) return null;
 
   useEffect(() => {
     const trigger = ScrollTrigger.create({

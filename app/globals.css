@@ -24,8 +24,10 @@
   --border-strong:    rgba(255, 255, 255, 0.16);
 }
 
-/* ─── Reset base ─────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ─── Reset base (dentro de @layer base para no anular utilities de Tailwind) ─ */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+}
 
 html {
   color-scheme: dark;
