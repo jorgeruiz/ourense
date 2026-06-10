@@ -23,19 +23,6 @@ function getIsTouch() {
   return _isTouch;
 }
 
-/* ─── OurenseMark (for nav) ──────────────────────────────────────────── */
-function OurenseMark({ size = 32 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true">
-      <circle cx="50" cy="50" r="42" stroke="#A80110" strokeWidth="7" strokeLinecap="round"
-        strokeDasharray="198 66" strokeDashoffset="-8" />
-      <circle cx="50" cy="50" r="28" stroke="#A80110" strokeWidth="6" strokeLinecap="round"
-        strokeDasharray="132 44" strokeDashoffset="-5" style={{ opacity: 0.65 }} />
-      <circle cx="50" cy="50" r="14" stroke="#A80110" strokeWidth="5" strokeLinecap="round"
-        strokeDasharray="66 22" strokeDashoffset="-3" style={{ opacity: 0.35 }} />
-    </svg>
-  );
-}
 
 /* ─── Component ─────────────────────────────────────────────────────── */
 export function ProjectDetail({ project, others }: Props) {
@@ -215,36 +202,45 @@ export function ProjectDetail({ project, others }: Props) {
       {/* ── Sticky nav ─────────────────────────────────────────────── */}
       <nav
         className="fixed top-0 left-0 right-0 z-50 grid items-center px-8 xl:px-16"
-        style={{ gridTemplateColumns: "1fr auto 1fr", height: "72px" }}
+        style={{
+          gridTemplateColumns: "1fr auto 1fr",
+          height: "72px",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          background: "rgba(10,10,10,0.22)",
+        }}
       >
-        {/* Left: back */}
-        <div className="flex items-center">
-          <TransitionLink
-            href="/propuesta-3/proyectos"
-            className="flex items-center gap-2 text-[#0A0A0A]/50 hover:text-[#0A0A0A] transition-colors"
-            style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Proyectos
-          </TransitionLink>
-        </div>
-
-        {/* Center: logo */}
-        <TransitionLink href="/propuesta-3" className="flex items-center justify-center gap-2.5">
-          <OurenseMark size={32} />
-          <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.26em", textTransform: "uppercase" }}>Ourense</span>
+        {/* Left: logo */}
+        <TransitionLink href="/propuesta-3" className="flex items-center gap-2">
+          <span style={{ fontFamily: "var(--font-display-base, serif)", fontSize: "38px", color: "#A80110", lineHeight: 1 }}>O</span>
+          <span className="hidden sm:block text-white font-bold uppercase" style={{ fontSize: "10px", letterSpacing: "0.26em" }}>Ourense</span>
         </TransitionLink>
 
-        {/* Right: contact */}
+        {/* Center: nav links */}
+        <div className="hidden md:flex items-center gap-8">
+          {["Nosotros", "Servicios", "Contacto"].map(label => (
+            <TransitionLink
+              key={label}
+              href={`/propuesta-3/${label.toLowerCase()}`}
+              className="text-white/70 hover:text-white transition-colors font-bold uppercase"
+              style={{ fontSize: "10px", letterSpacing: "0.22em" }}
+            >
+              {label}
+            </TransitionLink>
+          ))}
+        </div>
+
+        {/* Right: CTA */}
         <div className="flex justify-end">
           <TransitionLink
-            href="/contacto"
-            className="hidden sm:block font-bold uppercase text-[#0A0A0A]/50 hover:text-[#0A0A0A] transition-colors"
-            style={{ fontSize: "10px", letterSpacing: "0.22em" }}
+            href="/propuesta-3/contacto"
+            className="hidden sm:flex items-center gap-2 bg-[#A80110] text-white font-bold uppercase hover:bg-[#8a010d] active:scale-[0.98] transition-all duration-200"
+            style={{ fontSize: "10px", letterSpacing: "0.22em", padding: "10px 20px" }}
           >
-            Contacto
+            Cotizar
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+              <path d="M2 8L8 2M8 2H3M8 2v5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </TransitionLink>
         </div>
       </nav>
