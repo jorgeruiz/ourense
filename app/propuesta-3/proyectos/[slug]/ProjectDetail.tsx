@@ -30,7 +30,7 @@ export function ProjectDetail({ project, others }: Props) {
   /* Intro overlay */
   const introRef      = useRef<HTMLDivElement>(null);
   const introTitleRef = useRef<HTMLDivElement>(null);
-  const heroTitleRef  = useRef<HTMLHeadingElement>(null);
+  const heroTextRef   = useRef<HTMLDivElement>(null);
 
   /* Mini-slider cursor */
   const cursorRef      = useRef<HTMLDivElement>(null);
@@ -112,8 +112,8 @@ export function ProjectDetail({ project, others }: Props) {
   }, [others.length, miniGoTo]);
 
   /* ── Intro animation ─────────────────────────────────────────────── */
-  /* Phase 1: white overlay covers screen, title appears letter-by-letter (black)  */
-  /* Phase 2: overlay slides UP independently; title STAYS in place, color → white */
+  /* Phase 1: white overlay + title (location + headline + description) in black  */
+  /* Phase 2: overlay lifts independently; all text stays, turns white, then fades */
   useEffect(() => {
     const overlay = introRef.current;
     const titleEl = introTitleRef.current;
@@ -123,25 +123,30 @@ export function ProjectDetail({ project, others }: Props) {
     if (reduced) {
       gsap.set(overlay, { display: "none" });
       gsap.set(titleEl, { display: "none" });
-      if (heroTitleRef.current) gsap.set(heroTitleRef.current, { opacity: 1 });
+      if (heroTextRef.current) gsap.set(heroTextRef.current, { opacity: 1 });
       return;
     }
 
-    const chars = titleEl.querySelectorAll<HTMLElement>(".intro-char");
-    gsap.set(chars, { opacity: 0 });
+    const chars  = titleEl.querySelectorAll<HTMLElement>(".intro-char");
+    const subEl  = titleEl.querySelector<HTMLElement>(".intro-sub");
+    gsap.set(chars,  { opacity: 0 });
     gsap.set(titleEl, { color: "#0A0A0A" });
-    /* Hero title hidden until intro title exits */
-    if (heroTitleRef.current) gsap.set(heroTitleRef.current, { opacity: 0 });
+    if (subEl) gsap.set(subEl, { opacity: 0 });
+    /* Hide hero text block until intro exits */
+    if (heroTextRef.current) gsap.set(heroTextRef.current, { opacity: 0 });
 
     const tl = gsap.timeline();
 
-    /* Phase 1: letters appear, black on white */
-    tl.to(chars, { opacity: 1, stagger: 0.032, duration: 0.12, ease: "power2.out", delay: 0.25 });
+    /* Phase 1a: title appears letter by letter */
+    tl.to(chars, { opacity: 1, stagger: 0.028, duration: 0.11, ease: "power2.out", delay: 0.2 });
 
-    /* Hold */
-    tl.to({}, { duration: 0.3 });
+    /* Phase 1b: description fades in */
+    if (subEl) tl.to(subEl, { opacity: 0.6, duration: 0.35, ease: "power2.out" }, ">");
 
-    /* Phase 2a: white overlay lifts — title stays fixed (it's outside the overlay) */
+    /* Hold — all text visible in black on white */
+    tl.to({}, { duration: 0.4 });
+
+    /* Phase 2a: white overlay lifts (title is OUTSIDE the overlay — stays in place) */
     tl.to(overlay, {
       y: "-100%",
       duration: 0.7,
@@ -149,22 +154,17 @@ export function ProjectDetail({ project, others }: Props) {
       onComplete: () => gsap.set(overlay, { display: "none" }),
     }, ">");
 
-    /* Phase 2b: title color transitions black → white as hero image is revealed */
-    tl.to(titleEl, {
-      color: "#FFFFFF",
-      duration: 0.45,
-      ease: "power1.out",
-    }, "<+0.12"); /* starts 0.12s after overlay begins lifting */
+    /* Phase 2b: all intro text → white as hero image reveals beneath */
+    tl.to(titleEl, { color: "#FFFFFF", duration: 0.45, ease: "power1.out" }, "<+0.12");
 
-    /* Phase 2c: fade out intro title and simultaneously fade in hero title */
+    /* Phase 2c: fade out intro text, reveal hero text block (same position — no jump) */
     tl.to(titleEl, {
       opacity: 0,
-      duration: 0.22,
+      duration: 0.2,
       onComplete: () => {
         gsap.set(titleEl, { display: "none" });
-        /* Reveal hero title now that intro title is gone */
-        if (heroTitleRef.current) {
-          gsap.to(heroTitleRef.current, { opacity: 1, duration: 0.25, ease: "power2.out" });
+        if (heroTextRef.current) {
+          gsap.to(heroTextRef.current, { opacity: 1, duration: 0.2, ease: "power2.out" });
         }
       },
     });
@@ -255,12 +255,16 @@ export function ProjectDetail({ project, others }: Props) {
         className="fixed inset-0 z-[9989] bg-white pointer-events-none"
       />
 
-      {/* ── Intro title: OUTSIDE overlay so it stays when overlay lifts ── */}
+      {/* ── Intro text: OUTSIDE overlay — location + title + description ── */}
+      {/* Stays fixed while overlay lifts; color animates black → white      */}
       <div
         ref={introTitleRef}
         className="fixed z-[9990] pointer-events-none px-8 xl:px-16"
         style={{ left: 0, right: 0, bottom: "clamp(4rem, 8vh, 7rem)" }}
       >
+        <p className="font-bold uppercase mb-4" style={{ fontSize: "9px", letterSpacing: "0.3em", opacity: 0.35 }}>
+          {project.location} · {project.year}
+        </p>
         <div
           className="font-bold leading-[0.88] tracking-[-0.04em]"
           style={{ fontSize: "clamp(3rem, 8vw, 120px)" }}
@@ -275,6 +279,12 @@ export function ProjectDetail({ project, others }: Props) {
             </div>
           ))}
         </div>
+        <p
+          className="intro-sub mt-6 max-w-[520px] leading-[1.5]"
+          style={{ fontSize: "clamp(0.85rem, 1.4vw, 17px)" }}
+        >
+          {project.sub}
+        </p>
       </div>
 
       {/* ── Custom cursor for mini-slider ─────────────────────────── */}
@@ -387,8 +397,9 @@ export function ProjectDetail({ project, others }: Props) {
           </span>
         </div>
 
-        {/* Headline — bottom left */}
+        {/* Headline — bottom left (hidden until intro text exits) */}
         <div
+          ref={heroTextRef}
           className="absolute left-8 xl:left-16 right-8 xl:right-16"
           style={{ bottom: "clamp(4rem, 8vh, 7rem)" }}
         >
@@ -396,7 +407,6 @@ export function ProjectDetail({ project, others }: Props) {
             {project.location} · {project.year}
           </p>
           <h1
-            ref={heroTitleRef}
             className="font-bold text-white leading-[0.88] tracking-[-0.04em]"
             style={{ fontSize: "clamp(3rem, 8vw, 120px)" }}
           >
