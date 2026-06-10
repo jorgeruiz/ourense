@@ -220,8 +220,8 @@ export function ProposalPage() {
             const oldEl  = stepContentRefs.current[curStep];
             const newEl  = stepContentRefs.current[newStep];
 
-            if (oldEl) gsap.to(oldEl, { opacity: 0, y: -35 * dir, duration: 0.3, ease: "power2.in" });
-            if (newEl) gsap.fromTo(newEl, { opacity: 0, y: 35 * dir }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out", delay: 0.12 });
+            if (oldEl) gsap.to(oldEl, { opacity: 0, y: -28 * dir, duration: 0.28, ease: "power2.in" });
+            if (newEl) gsap.fromTo(newEl, { opacity: 0, y: 28 * dir }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", delay: 0.3 });
 
             stepDotRefs.current.forEach((dot, i) => {
               if (!dot) return;
@@ -328,18 +328,18 @@ export function ProposalPage() {
       </section>
 
       {/* ══ STATS ═════════════════════════════════════════════════════ */}
-      <section className="stats-section px-6 xl:px-16 py-24 xl:py-40">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-4">
+      <section className="stats-section px-6 xl:px-16 py-20 xl:py-32">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6 items-start">
           {[
-            { num: "+10",  label: "Años de experiencia en México" },
-            { num: "100%", label: "Proyectos con supervisión continua" },
-            { num: "6",    label: "Líneas de servicio en una sola empresa" },
-          ].map(({ num, label }, i) => (
-            <div key={num} className="stat-item" style={{ marginTop: i === 1 ? "clamp(48px, 11vw, 130px)" : 0 }}>
-              <div className="font-bold leading-none tracking-[-0.05em]" style={{ fontSize: "clamp(5rem, 14vw, 200px)" }}>
+            { num: "+10",  label: "Años de experiencia en México",          offset: "0" },
+            { num: "100%", label: "Proyectos con supervisión continua",      offset: "clamp(40px, 10vw, 120px)" },
+            { num: "6",    label: "Líneas de servicio en una sola empresa",  offset: "clamp(16px, 4vw, 52px)" },
+          ].map(({ num, label, offset }) => (
+            <div key={num} className="stat-item" style={{ marginTop: offset }}>
+              <div className="font-bold leading-none tracking-[-0.05em]" style={{ fontSize: "clamp(3.2rem, 8vw, 110px)" }}>
                 {num}
               </div>
-              <div className="h-px bg-[#0A0A0A] mt-5 mb-4" />
+              <div className="h-px bg-[#0A0A0A] mt-4 mb-3" />
               <p className="text-sm text-[#555] leading-snug max-w-[200px]">{label}</p>
             </div>
           ))}
@@ -377,7 +377,7 @@ export function ProposalPage() {
                 <span className="font-bold text-[#A80110] mb-6 block" style={{ fontSize: "11px", letterSpacing: "0.26em" }}>
                   {step.num}
                 </span>
-                <h2 className="font-bold leading-[0.88] tracking-[-0.045em] mb-8" style={{ fontSize: "clamp(2.8rem, 7vw, 104px)" }}>
+                <h2 className="font-bold leading-[0.9] tracking-[-0.04em] mb-8" style={{ fontSize: "clamp(2rem, 4.5vw, 68px)" }}>
                   {step.title.map((line, li) => <div key={li}>{line}</div>)}
                 </h2>
                 <div className="h-px bg-[#0A0A0A]/12 mb-8 max-w-[300px]" />
@@ -543,11 +543,24 @@ export function ProposalPage() {
 
       {/* ══ PROJECTS ══════════════════════════════════════════════════ */}
       <section className="projects-section border-t border-[#0A0A0A]">
-        <div className="px-6 xl:px-16 py-10 flex items-center justify-between border-b border-[#0A0A0A]">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-[#888]">Proyectos destacados</p>
-          <Link href="/portafolio" className="text-[11px] uppercase tracking-[0.18em] text-[#555] hover:text-[#0A0A0A] transition-colors duration-150">
-            Ver portafolio →
-          </Link>
+
+        {/* Header — taller, con intro (igual estructura que Servicios) */}
+        <div className="px-6 xl:px-16 pt-16 xl:pt-24 pb-14 xl:pb-20 border-b border-[#0A0A0A]">
+          <div className="flex items-start justify-between mb-10 xl:mb-14">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-[#888]">Proyectos destacados</p>
+            <Link href="/portafolio" className="text-[11px] uppercase tracking-[0.18em] text-[#555] hover:text-[#0A0A0A] transition-colors duration-150">
+              Ver portafolio →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-20 items-end">
+            <h2 className="font-bold leading-[0.92] tracking-[-0.035em]"
+              style={{ fontSize: "clamp(2rem, 4.5vw, 66px)" }}>
+              Obra que resiste el tiempo y la revisión.
+            </h2>
+            <p className="text-[#555] leading-relaxed max-w-[440px]" style={{ fontSize: "15px" }}>
+              Cada proyecto en este portafolio fue entregado en plazo, con la ingeniería documentada y sin ajustes de última hora. Son el mejor argumento para trabajar con Ourense.
+            </p>
+          </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-[#0A0A0A]">
           {PROJECTS.map(p => (
